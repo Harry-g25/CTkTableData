@@ -1,0 +1,1912 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CTkDataTable User Guide and API Reference</title>
+  <style>
+    :root { color-scheme: dark; --bg: #0b1020; --panel: #111827; --panel-2: #0f172a; --text: #e5e7eb; --muted: #9ca3af; --border: #253044; --accent: #60a5fa; --accent-strong: #93c5fd; --code-bg: #050816; --code-text: #dbeafe; --soft: #17233d; --shadow: rgba(0, 0, 0, 0.38); }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--text); background: var(--bg); line-height: 1.6; }
+    .layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: 100vh; }
+    .sidebar { position: sticky; top: 0; height: 100vh; overflow: auto; padding: 24px 18px; border-right: 1px solid var(--border); background: #090e1a; box-shadow: 8px 0 24px var(--shadow); }
+    .sidebar h2 { margin: 0 0 12px; font-size: 16px; }
+    .sidebar a { display: block; color: var(--muted); text-decoration: none; padding: 5px 8px; border-radius: 6px; font-size: 14px; }
+    .sidebar a:hover { color: var(--accent-strong); background: var(--soft); }
+    .toc-h3 { padding-left: 20px !important; font-size: 13px !important; }
+    main { max-width: 1160px; padding: 36px 44px 64px; }
+    h1 { margin-top: 0; font-size: 34px; line-height: 1.15; }
+    h2 { margin-top: 44px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 25px; }
+    h3 { margin-top: 30px; font-size: 20px; }
+    h4 { margin-top: 24px; font-size: 16px; }
+    p { max-width: 86ch; }
+    code { font-family: Consolas, "Courier New", monospace; background: #182235; color: #bfdbfe; padding: 2px 5px; border-radius: 5px; }
+    .code-card { position: relative; margin: 16px 0 22px; }
+    pre { overflow: auto; margin: 0; padding: 18px; border-radius: 8px; border: 1px solid #1e2a44; background: var(--code-bg); color: var(--code-text); font-size: 13px; line-height: 1.5; box-shadow: 0 12px 28px var(--shadow); }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .copy-button { position: absolute; top: 8px; right: 8px; border: 1px solid #334155; background: #0f172a; color: #dbeafe; border-radius: 6px; padding: 5px 9px; cursor: pointer; }
+    .copy-button:hover { border-color: var(--accent); background: #17233d; color: #ffffff; }
+    .table-wrap { overflow: auto; margin: 16px 0 24px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); box-shadow: 0 10px 22px var(--shadow); }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; text-align: left; }
+    th { background: var(--panel-2); color: #f8fafc; font-weight: 700; }
+    td { color: #d1d5db; }
+    tr:last-child td { border-bottom: 0; }
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-strong); }
+    .top-link { position: fixed; right: 18px; bottom: 18px; background: #2563eb; color: #fff; text-decoration: none; padding: 9px 12px; border-radius: 8px; font-size: 14px; box-shadow: 0 10px 22px var(--shadow); }
+    .tok-comment { color: #7dd3fc; font-style: italic; }
+    .tok-keyword { color: #c084fc; font-weight: 700; }
+    .tok-string { color: #86efac; }
+    .tok-number { color: #fbbf24; }
+    .tok-function { color: #93c5fd; }
+    .tok-type { color: #67e8f9; }
+    .tok-operator { color: #f9a8d4; }
+    .tok-builtin { color: #fda4af; }
+    @media (max-width: 940px) { .layout { display: block; } .sidebar { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); } main { padding: 28px 18px 56px; } h1 { font-size: 28px; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar"><h2>Contents</h2><a class="toc-h2" href="#what-you-need-first">What You Need First</a>
+<a class="toc-h2" href="#entry-point-1-static-data-display">Entry Point 1: Static Data Display</a>
+<a class="toc-h2" href="#entry-point-2-real-time-updates">Entry Point 2: Real-Time Updates</a>
+<a class="toc-h2" href="#entry-point-3-interactive-sorting-searching-and-filtering">Entry Point 3: Interactive Sorting, Searching, and Filtering</a>
+<a class="toc-h2" href="#row-data">Row Data</a>
+<a class="toc-h3" href="#sqlite-rows">SQLite Rows</a>
+<a class="toc-h3" href="#db-api-cursor-rows">DB-API Cursor Rows</a>
+<a class="toc-h3" href="#sqlalchemy-rows">SQLAlchemy Rows</a>
+<a class="toc-h2" href="#column-definitions">Column Definitions</a>
+<a class="toc-h2" href="#all-column-types-in-one-app">All Column Types in One App</a>
+<a class="toc-h2" href="#column-type-reference">Column Type Reference</a>
+<a class="toc-h3" href="#text">Text</a>
+<a class="toc-h3" href="#number">Number</a>
+<a class="toc-h3" href="#currency">Currency</a>
+<a class="toc-h3" href="#date">Date</a>
+<a class="toc-h3" href="#datetime">Datetime</a>
+<a class="toc-h3" href="#badge">Badge</a>
+<a class="toc-h3" href="#checkbox">Checkbox</a>
+<a class="toc-h3" href="#progress">Progress</a>
+<a class="toc-h3" href="#link">Link</a>
+<a class="toc-h3" href="#pill-list">Pill List</a>
+<a class="toc-h3" href="#action">Action</a>
+<a class="toc-h2" href="#major-features">Major Features</a>
+<a class="toc-h3" href="#built-in-search-entry">Built-In Search Entry</a>
+<a class="toc-h3" href="#external-search-entry">External Search Entry</a>
+<a class="toc-h3" href="#sorting">Sorting</a>
+<a class="toc-h3" href="#column-filters">Column Filters</a>
+<a class="toc-h3" href="#selection-and-multi-select">Selection and Multi-Select</a>
+<a class="toc-h3" href="#bulk-actions-with-multi-select">Bulk Actions with Multi-Select</a>
+<a class="toc-h3" href="#row-cell-link-action-and-checkbox-callbacks">Row, Cell, Link, Action, and Checkbox Callbacks</a>
+<a class="toc-h3" href="#context-menus">Context Menus</a>
+<a class="toc-h3" href="#resizable-columns-and-horizontal-scroll">Resizable Columns and Horizontal Scroll</a>
+<a class="toc-h3" href="#table-styling">Table Styling</a>
+<a class="toc-h3" href="#style-hooks">Style Hooks</a>
+<a class="toc-h3" href="#badgestyle-for-dynamic-badges">BadgeStyle for Dynamic Badges</a>
+<a class="toc-h3" href="#footer-summaries">Footer Summaries</a>
+<a class="toc-h3" href="#loading-state">Loading State</a>
+<a class="toc-h3" href="#async-loading">Async Loading</a>
+<a class="toc-h3" href="#error-state">Error State</a>
+<a class="toc-h2" href="#constructor-reference">Constructor Reference</a>
+<a class="toc-h2" href="#tablestyle-reference">TableStyle Reference</a>
+<a class="toc-h2" href="#tablecolumn-reference">TableColumn Reference</a>
+<a class="toc-h2" href="#column-builder-reference">Column Builder Reference</a>
+<a class="toc-h2" href="#tableaction-reference">TableAction Reference</a>
+<a class="toc-h2" href="#badgestyle-reference">BadgeStyle Reference</a>
+<a class="toc-h2" href="#tablerowevent-reference">TableRowEvent Reference</a>
+<a class="toc-h2" href="#method-reference">Method Reference</a>
+<a class="toc-h3" href="#data-method-examples">Data Method Examples</a>
+<a class="toc-h3" href="#navigation-and-selection-method-examples">Navigation and Selection Method Examples</a>
+<a class="toc-h3" href="#column-method-examples">Column Method Examples</a>
+<a class="toc-h3" href="#style-method-examples">Style Method Examples</a>
+<a class="toc-h3" href="#search-sort-and-filter-method-examples">Search, Sort, and Filter Method Examples</a>
+<a class="toc-h3" href="#loading-method-examples">Loading Method Examples</a>
+<a class="toc-h2" href="#rows-from-cursor-reference">rows_from_cursor Reference</a>
+<a class="toc-h2" href="#complete-mini-app">Complete Mini App</a>
+<a class="toc-h2" href="#readiness-assessment">Readiness Assessment</a></aside>
+    <main id="top"><h1 id="ctkdatatable-user-guide-and-api-reference">CTkDataTable User Guide and API Reference</h1>
+<p><code>CTkDataTable</code> is a virtualized data table for CustomTkinter. Use it when you want to show records from Python lists, database queries, reports, admin screens, dashboards, or audit logs without creating one Tkinter widget for every cell.</p>
+<p>The table renders only the visible body rows, so large datasets stay responsive. Your full row list is still kept in memory.</p>
+<h2 id="what-you-need-first">What You Need First</h2>
+<p>Install the package in your environment, then import the widget:</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+    python -m pip install -e "C:\Users\Harry\OneDrive\Documents\Coding Projects\CTkTableData"
+
+from CTkDataTable import CTkDataTable</code></pre></div>
+<p>Optional public helpers:</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from CTkDataTable import BadgeStyle, Column, TableAction, TableColumn, TableRowEvent, TableStyle, rows_from_cursor</code></pre></div>
+<p>Use the table in three steps:</p>
+<ol><li>Define <code>columns</code>.</li><li>Provide <code>rows</code>.</li><li>Place the table with <code>grid()</code>, <code>pack()</code>, or <code>place()</code>.</li></ol>
+<p>The most important rule:</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">column[&quot;key&quot;] == row_dictionary_key</code></pre></div>
+<p>For example, this column:</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">{&quot;key&quot;: &quot;name&quot;, &quot;title&quot;: &quot;Name&quot;, &quot;width&quot;: 180}</code></pre></div>
+<p>reads this value from each row:</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">{&quot;name&quot;: &quot;Alice&quot;}</code></pre></div>
+<p>Use the exact same spelling and capitalization. <code>customer_name</code> and <code>customerName</code> are different keys.</p>
+<h2 id="entry-point-1-static-data-display">Entry Point 1: Static Data Display</h2>
+<p>Use this pattern when you already have a list of records and want to show it.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable
+
+
+app = ctk.CTk()
+app.title(&quot;Customers&quot;)
+app.geometry(&quot;760x420&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(0, weight=1)
+
+columns = [
+    {&quot;key&quot;: &quot;id&quot;, &quot;title&quot;: &quot;ID&quot;, &quot;width&quot;: 80, &quot;type&quot;: &quot;number&quot;},
+    {&quot;key&quot;: &quot;name&quot;, &quot;title&quot;: &quot;Customer&quot;, &quot;width&quot;: 220},
+    {&quot;key&quot;: &quot;status&quot;, &quot;title&quot;: &quot;Status&quot;, &quot;width&quot;: 140, &quot;type&quot;: &quot;badge&quot;},
+]
+
+rows = [
+    {&quot;id&quot;: 1, &quot;name&quot;: &quot;Northwind Components&quot;, &quot;status&quot;: &quot;Open&quot;},
+    {&quot;id&quot;: 2, &quot;name&quot;: &quot;Meridian Foods&quot;, &quot;status&quot;: &quot;Closed&quot;},
+    {&quot;id&quot;: 3, &quot;name&quot;: &quot;Blue Ridge Logistics&quot;, &quot;status&quot;: &quot;In Review&quot;},
+]
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;, padx=16, pady=16)
+
+app.mainloop()</code></pre></div>
+<h2 id="entry-point-2-real-time-updates">Entry Point 2: Real-Time Updates</h2>
+<p>Use <code>add_row()</code>, <code>add_rows()</code>, <code>update_row_where()</code>, and <code>delete_row_by_key()</code> when rows change after the table is already visible.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable
+
+
+app = ctk.CTk()
+app.title(&quot;Live Orders&quot;)
+app.geometry(&quot;820x420&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(1, weight=1)
+
+columns = [
+    {&quot;key&quot;: &quot;id&quot;, &quot;title&quot;: &quot;Order&quot;, &quot;width&quot;: 100},
+    {&quot;key&quot;: &quot;customer&quot;, &quot;title&quot;: &quot;Customer&quot;, &quot;width&quot;: 220},
+    {&quot;key&quot;: &quot;status&quot;, &quot;title&quot;: &quot;Status&quot;, &quot;width&quot;: 140, &quot;type&quot;: &quot;badge&quot;},
+    {&quot;key&quot;: &quot;amount&quot;, &quot;title&quot;: &quot;Amount&quot;, &quot;width&quot;: 120, &quot;type&quot;: &quot;currency&quot;},
+]
+
+rows = [
+    {&quot;id&quot;: &quot;SO-1001&quot;, &quot;customer&quot;: &quot;Northwind Components&quot;, &quot;status&quot;: &quot;Open&quot;, &quot;amount&quot;: 1250},
+    {&quot;id&quot;: &quot;SO-1002&quot;, &quot;customer&quot;: &quot;Meridian Foods&quot;, &quot;status&quot;: &quot;Open&quot;, &quot;amount&quot;: 890},
+]
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=1, column=0, sticky=&quot;nsew&quot;, padx=16, pady=(0, 16))
+
+
+def add_order() -&gt; None:
+    table.add_row(
+        {&quot;id&quot;: &quot;SO-1003&quot;, &quot;customer&quot;: &quot;Blue Ridge Logistics&quot;, &quot;status&quot;: &quot;Open&quot;, &quot;amount&quot;: 1425}
+    )
+
+
+def mark_shipped() -&gt; None:
+    table.update_row_where(
+        &quot;id&quot;,
+        &quot;SO-1001&quot;,
+        {&quot;id&quot;: &quot;SO-1001&quot;, &quot;customer&quot;: &quot;Northwind Components&quot;, &quot;status&quot;: &quot;Shipped&quot;, &quot;amount&quot;: 1250},
+    )
+
+
+def remove_order() -&gt; None:
+    table.delete_row_by_key(&quot;id&quot;, &quot;SO-1002&quot;)
+
+
+toolbar = ctk.CTkFrame(app, corner_radius=0)
+toolbar.grid(row=0, column=0, sticky=&quot;ew&quot;, padx=16, pady=(16, 8))
+ctk.CTkButton(toolbar, text=&quot;Add&quot;, command=add_order).grid(row=0, column=0, padx=6, pady=8)
+ctk.CTkButton(toolbar, text=&quot;Ship SO-1001&quot;, command=mark_shipped).grid(row=0, column=1, padx=6, pady=8)
+ctk.CTkButton(toolbar, text=&quot;Remove SO-1002&quot;, command=remove_order).grid(row=0, column=2, padx=6, pady=8)
+
+app.mainloop()</code></pre></div>
+<h2 id="entry-point-3-interactive-sorting-searching-and-filtering">Entry Point 3: Interactive Sorting, Searching, and Filtering</h2>
+<p>Users can click sortable headers. Your code can also call <code>sort_by()</code>, <code>search()</code>, and <code>set_column_filter()</code>.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable, TableRowEvent
+
+
+app = ctk.CTk()
+app.title(&quot;Interactive Table&quot;)
+app.geometry(&quot;900x500&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(2, weight=1)
+
+status = ctk.CTkLabel(app, text=&quot;No selection&quot;, anchor=&quot;w&quot;)
+status.grid(row=0, column=0, sticky=&quot;ew&quot;, padx=16, pady=(16, 4))
+
+search = ctk.CTkEntry(app, placeholder_text=&quot;Search visible columns&quot;)
+search.grid(row=1, column=0, sticky=&quot;ew&quot;, padx=16, pady=(4, 8))
+
+columns = [
+    {&quot;key&quot;: &quot;id&quot;, &quot;title&quot;: &quot;ID&quot;, &quot;width&quot;: 80, &quot;type&quot;: &quot;number&quot;},
+    {&quot;key&quot;: &quot;name&quot;, &quot;title&quot;: &quot;Customer&quot;, &quot;width&quot;: 220},
+    {&quot;key&quot;: &quot;status&quot;, &quot;title&quot;: &quot;Status&quot;, &quot;width&quot;: 140, &quot;type&quot;: &quot;badge&quot;},
+    {&quot;key&quot;: &quot;amount&quot;, &quot;title&quot;: &quot;Amount&quot;, &quot;width&quot;: 120, &quot;type&quot;: &quot;currency&quot;},
+]
+
+rows = [
+    {&quot;id&quot;: 1, &quot;name&quot;: &quot;Northwind Components&quot;, &quot;status&quot;: &quot;Open&quot;, &quot;amount&quot;: 1250},
+    {&quot;id&quot;: 2, &quot;name&quot;: &quot;Meridian Foods&quot;, &quot;status&quot;: &quot;Closed&quot;, &quot;amount&quot;: 890},
+    {&quot;id&quot;: 3, &quot;name&quot;: &quot;Blue Ridge Logistics&quot;, &quot;status&quot;: &quot;Open&quot;, &quot;amount&quot;: 1425},
+]
+
+
+def show_selected(event: TableRowEvent) -&gt; None:
+    status.configure(
+        text=f&quot;Selected source row {event.source_index}, visible row {event.view_index}: {event.row[&#x27;name&#x27;]}&quot;
+    )
+
+
+def report_sort(column_key: str, ascending: bool) -&gt; None:
+    direction = &quot;ascending&quot; if ascending else &quot;descending&quot;
+    status.configure(text=f&quot;Sorted by {column_key} {direction}&quot;)
+
+
+table = CTkDataTable(
+    app,
+    columns=columns,
+    data=rows,
+    multi_select=True,
+    on_row_click=show_selected,
+    on_sort=report_sort,
+)
+table.grid(row=2, column=0, sticky=&quot;nsew&quot;, padx=16, pady=(0, 16))
+
+search.bind(&quot;&lt;KeyRelease&gt;&quot;, lambda _event: table.search(search.get()))
+
+table.set_column_filter(&quot;status&quot;, {&quot;type&quot;: &quot;equals&quot;, &quot;value&quot;: &quot;Open&quot;})
+table.sort_by(&quot;amount&quot;, ascending=False)
+
+app.mainloop()</code></pre></div>
+<h2 id="row-data">Row Data</h2>
+<p>Rows are converted to dictionaries internally. The table accepts:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Source row value</th><th>How to use it</th></tr></thead>
+<tbody>
+<tr><td><code>dict</code></td><td>Pass directly in <code>data</code>, <code>set_data()</code>, <code>add_row()</code>, or <code>add_rows()</code>.</td></tr>
+<tr><td>Any mapping object</td><td>Pass directly if it behaves like a dictionary.</td></tr>
+<tr><td><code>sqlite3.Row</code></td><td>Set <code>connection.row_factory = sqlite3.Row</code>, then pass fetched rows directly.</td></tr>
+<tr><td>SQLAlchemy rows with <code>_mapping</code></td><td>Pass fetched result rows directly.</td></tr>
+<tr><td>PostgreSQL dictionary rows</td><td>Use psycopg 3 <code>dict_row</code> or psycopg2 <code>RealDictCursor</code>, then pass fetched rows directly.</td></tr>
+<tr><td>Plain DB-API tuple rows</td><td>Convert them with <code>rows_from_cursor(cursor)</code>.</td></tr>
+</tbody></table></div>
+<p>Plain tuple rows do not contain column names, so the table cannot use them directly.</p>
+<h3 id="sqlite-rows">SQLite Rows</h3>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import sqlite3
+
+
+connection = sqlite3.connect(&quot;customers.db&quot;)
+connection.row_factory = sqlite3.Row
+
+rows = connection.execute(
+    &quot;&quot;&quot;
+    SELECT id, name, status
+    FROM customers
+    ORDER BY name
+    &quot;&quot;&quot;
+).fetchall()
+
+table.set_data(rows)</code></pre></div>
+<h3 id="db-api-cursor-rows">DB-API Cursor Rows</h3>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from CTkDataTable import rows_from_cursor
+
+
+cursor.execute(
+    &quot;&quot;&quot;
+    SELECT id, name, status
+    FROM customers
+    ORDER BY name
+    &quot;&quot;&quot;
+)
+
+table.set_data(rows_from_cursor(cursor))</code></pre></div>
+<h3 id="sqlalchemy-rows">SQLAlchemy Rows</h3>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from sqlalchemy import text
+
+
+with engine.connect() as connection:
+    result = connection.execute(
+        text(&quot;SELECT id, name, status FROM customers ORDER BY name&quot;)
+    )
+    table.set_data(result.fetchall())</code></pre></div>
+<p>If database column names do not match your table keys, use SQL aliases:</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-sql">SELECT customer_id AS id, customer_name AS name, order_status AS status
+FROM customers;</code></pre></div>
+<h2 id="column-definitions">Column Definitions</h2>
+<p>You can define columns with dictionaries, <code>TableColumn</code>, or the fluent <code>Column</code> builder. Dictionary columns are the shortest option.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">columns = [
+    {&quot;key&quot;: &quot;id&quot;, &quot;title&quot;: &quot;ID&quot;, &quot;width&quot;: 80, &quot;type&quot;: &quot;number&quot;},
+    {&quot;key&quot;: &quot;name&quot;, &quot;title&quot;: &quot;Customer&quot;, &quot;width&quot;: 220},
+]</code></pre></div>
+<p>Use <code>TableColumn</code> when you prefer typed Python objects:</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from CTkDataTable import TableColumn
+
+
+columns = [
+    TableColumn(key=&quot;id&quot;, title=&quot;ID&quot;, width=80, type=&quot;number&quot;),
+    TableColumn(key=&quot;name&quot;, title=&quot;Customer&quot;, width=220),
+]</code></pre></div>
+<p>Use <code>Column</code> when you want fluent column setup:</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from CTkDataTable import Column
+
+
+columns = [
+    Column(&quot;id&quot;).title(&quot;ID&quot;).width(80).number(),
+    Column(&quot;name&quot;).title(&quot;Customer&quot;).width(220).text(),
+    Column(&quot;status&quot;).title(&quot;Status&quot;).width(140).badge(
+        colors={&quot;Open&quot;: &quot;#22c55e&quot;, &quot;Closed&quot;: &quot;#64748b&quot;},
+        fallback_color=&quot;#94a3b8&quot;,
+    ),
+]</code></pre></div>
+<h2 id="all-column-types-in-one-app">All Column Types in One App</h2>
+<p>This complete app demonstrates all 12 column types: <code>text</code>, <code>number</code>, <code>percentage</code>, <code>currency</code>, <code>date</code>, <code>datetime</code>, <code>badge</code>, <code>checkbox</code>, <code>progress</code>, <code>link</code>, <code>pill_list</code>, and <code>action</code>.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from datetime import date, datetime
+
+import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable, TableRowEvent
+
+
+app = ctk.CTk()
+app.title(&quot;Column Types&quot;)
+app.geometry(&quot;1180x520&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(1, weight=1)
+
+message = ctk.CTkLabel(app, text=&quot;Click a link or action&quot;, anchor=&quot;w&quot;)
+message.grid(row=0, column=0, sticky=&quot;ew&quot;, padx=16, pady=(16, 8))
+
+columns = [
+    {&quot;key&quot;: &quot;name&quot;, &quot;title&quot;: &quot;Text&quot;, &quot;width&quot;: 180, &quot;type&quot;: &quot;text&quot;},
+    {&quot;key&quot;: &quot;quantity&quot;, &quot;title&quot;: &quot;Number&quot;, &quot;width&quot;: 95, &quot;type&quot;: &quot;number&quot;, &quot;number_format&quot;: &quot;{:,.0f}&quot;},
+    {&quot;key&quot;: &quot;margin&quot;, &quot;title&quot;: &quot;Percentage&quot;, &quot;width&quot;: 120, &quot;type&quot;: &quot;percentage&quot;, &quot;percentage_format&quot;: &quot;{value:.1f}%&quot;},
+    {&quot;key&quot;: &quot;amount&quot;, &quot;title&quot;: &quot;Currency&quot;, &quot;width&quot;: 120, &quot;type&quot;: &quot;currency&quot;, &quot;currency_symbol&quot;: &quot;$&quot;},
+    {&quot;key&quot;: &quot;due_date&quot;, &quot;title&quot;: &quot;Date&quot;, &quot;width&quot;: 120, &quot;type&quot;: &quot;date&quot;, &quot;date_format&quot;: &quot;%d %b %Y&quot;},
+    {&quot;key&quot;: &quot;updated_at&quot;, &quot;title&quot;: &quot;Datetime&quot;, &quot;width&quot;: 150, &quot;type&quot;: &quot;datetime&quot;, &quot;datetime_format&quot;: &quot;%d %b %H:%M&quot;},
+    {
+        &quot;key&quot;: &quot;status&quot;,
+        &quot;title&quot;: &quot;Badge&quot;,
+        &quot;width&quot;: 120,
+        &quot;type&quot;: &quot;badge&quot;,
+        &quot;badge_colors&quot;: {&quot;Open&quot;: &quot;#22c55e&quot;, &quot;Blocked&quot;: &quot;#ef4444&quot;},
+        &quot;badge_fallback_color&quot;: &quot;#64748b&quot;,
+    },
+    {&quot;key&quot;: &quot;approved&quot;, &quot;title&quot;: &quot;Checkbox&quot;, &quot;width&quot;: 105, &quot;type&quot;: &quot;checkbox&quot;},
+    {&quot;key&quot;: &quot;progress&quot;, &quot;title&quot;: &quot;Progress&quot;, &quot;width&quot;: 145, &quot;type&quot;: &quot;progress&quot;, &quot;progress_text_format&quot;: &quot;{percent:.0f}%&quot;},
+    {&quot;key&quot;: &quot;profile&quot;, &quot;title&quot;: &quot;Link&quot;, &quot;width&quot;: 120, &quot;type&quot;: &quot;link&quot;},
+    {
+        &quot;key&quot;: &quot;tags&quot;,
+        &quot;title&quot;: &quot;Pills&quot;,
+        &quot;width&quot;: 170,
+        &quot;type&quot;: &quot;pill_list&quot;,
+        &quot;pill_colors&quot;: {&quot;Urgent&quot;: &quot;#ef4444&quot;, &quot;Finance&quot;: &quot;#0ea5e9&quot;},
+        &quot;pill_fallback_color&quot;: &quot;#64748b&quot;,
+        &quot;pill_text_color&quot;: &quot;#ffffff&quot;,
+    },
+    {
+        &quot;key&quot;: &quot;actions&quot;,
+        &quot;title&quot;: &quot;Action&quot;,
+        &quot;width&quot;: 170,
+        &quot;type&quot;: &quot;action&quot;,
+        &quot;sortable&quot;: False,
+        &quot;actions&quot;: [
+            {&quot;key&quot;: &quot;view&quot;, &quot;label&quot;: &quot;View&quot;},
+            {&quot;key&quot;: &quot;delete&quot;, &quot;label&quot;: &quot;Delete&quot;},
+        ],
+    },
+]
+
+rows = [
+    {
+        &quot;name&quot;: &quot;Northwind Components&quot;,
+        &quot;quantity&quot;: 1200,
+        &quot;margin&quot;: 18.4,
+        &quot;amount&quot;: 12640.5,
+        &quot;due_date&quot;: date(2026, 6, 12),
+        &quot;updated_at&quot;: datetime(2026, 6, 4, 9, 30),
+        &quot;status&quot;: &quot;Open&quot;,
+        &quot;approved&quot;: True,
+        &quot;progress&quot;: 72,
+        &quot;profile&quot;: &quot;Open&quot;,
+        &quot;tags&quot;: [&quot;Urgent&quot;, &quot;Finance&quot;],
+        &quot;actions&quot;: None,
+    },
+    {
+        &quot;name&quot;: &quot;Meridian Foods&quot;,
+        &quot;quantity&quot;: 860,
+        &quot;margin&quot;: 7.5,
+        &quot;amount&quot;: -240.75,
+        &quot;due_date&quot;: &quot;2026-06-18&quot;,
+        &quot;updated_at&quot;: &quot;2026-06-04T15:45:00&quot;,
+        &quot;status&quot;: &quot;Blocked&quot;,
+        &quot;approved&quot;: False,
+        &quot;progress&quot;: 35,
+        &quot;profile&quot;: &quot;Open&quot;,
+        &quot;tags&quot;: &quot;Sales, Follow-up&quot;,
+        &quot;actions&quot;: None,
+    },
+]
+
+
+def handle_link(event: TableRowEvent) -&gt; None:
+    message.configure(text=f&quot;Link clicked for {event.row[&#x27;name&#x27;]}&quot;)
+
+
+def handle_action(event: TableRowEvent) -&gt; None:
+    message.configure(text=f&quot;{event.action_key} clicked for {event.row[&#x27;name&#x27;]}&quot;)
+
+
+table = CTkDataTable(
+    app,
+    columns=columns,
+    data=rows,
+    horizontal_scroll=True,
+    on_link_click=handle_link,
+    on_action_click=handle_action,
+)
+table.grid(row=1, column=0, sticky=&quot;nsew&quot;, padx=16, pady=(0, 16))
+
+app.mainloop()</code></pre></div>
+<h2 id="column-type-reference">Column Type Reference</h2>
+<p>Each column type below has a complete runnable example. Copy the whole code block into a Python file and run it from an environment where <code>customtkinter</code> and <code>CTkDataTable</code> are installed.</p>
+<p>Every column type supports these common adjustable options:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td><code>key</code></td><td>Required</td><td>String row field name. Must match row dictionary keys exactly.</td><td>Which row value the column displays.</td></tr>
+<tr><td><code>title</code></td><td>Title-cased <code>key</code> for dictionary columns</td><td>String</td><td>Header label.</td></tr>
+<tr><td><code>width</code></td><td><code>140</code> for dictionary columns</td><td>Integer greater than <code>0</code></td><td>Column width in pixels.</td></tr>
+<tr><td><code>align</code></td><td>Depends on type</td><td><code>&quot;left&quot;</code>, <code>&quot;center&quot;</code>, or <code>&quot;right&quot;</code></td><td>Cell and header alignment.</td></tr>
+<tr><td><code>visible</code></td><td><code>True</code></td><td><code>True</code> or <code>False</code></td><td>Whether the column is rendered and searched.</td></tr>
+<tr><td><code>sortable</code></td><td><code>True</code></td><td><code>True</code> or <code>False</code></td><td>Whether header clicks sort this column.</td></tr>
+<tr><td><code>formatter</code></td><td><code>None</code></td><td>Callable <code>(value, row) -&gt; str</code></td><td>Custom display text before built-in type formatting.</td></tr>
+<tr><td><code>metadata</code></td><td><code>{}</code></td><td>Mapping</td><td>App-specific metadata stored with the column.</td></tr>
+</tbody></table></div>
+<p>Common <code>Column</code> builder methods also work with every type: <code>.title(...)</code>, <code>.width(...)</code>, <code>.align(...)</code>, <code>.hide()</code>, <code>.no_sort()</code>, <code>.fmt(...)</code>, and <code>.metadata(...)</code>.</p>
+<h3 id="text">Text</h3>
+<p>Text is the default column type. It displays the row value as text.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable
+
+
+app = ctk.CTk()
+app.title(&quot;Text Column&quot;)
+app.geometry(&quot;520x260&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(0, weight=1)
+
+columns = [
+    {&quot;key&quot;: &quot;customer&quot;, &quot;title&quot;: &quot;Customer&quot;, &quot;width&quot;: 260, &quot;type&quot;: &quot;text&quot;},
+]
+
+rows = [
+    {&quot;customer&quot;: &quot;Northwind Components&quot;},
+    {&quot;customer&quot;: &quot;Meridian Foods&quot;},
+]
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;, padx=16, pady=16)
+
+app.mainloop()</code></pre></div>
+<p>Builder methods for text columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;customer&quot;).text()</code></td><td>None</td><td>Sets <code>type=&quot;text&quot;</code>.</td></tr>
+<tr><td><code>Column(&quot;customer&quot;).fmt(func)</code></td><td>Callable <code>(value, row) -&gt; str</code></td><td>Sets a custom formatter for displayed text.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for text columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;text&quot;</code></td><td>Uses plain text display.</td></tr>
+</tbody></table></div>
+<h3 id="number">Number</h3>
+<p>Number columns right-align by default and sort numerically.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable
+
+
+app = ctk.CTk()
+app.title(&quot;Number Column&quot;)
+app.geometry(&quot;520x260&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(0, weight=1)
+
+columns = [
+    {
+        &quot;key&quot;: &quot;quantity&quot;,
+        &quot;title&quot;: &quot;Quantity&quot;,
+        &quot;width&quot;: 140,
+        &quot;type&quot;: &quot;number&quot;,
+        &quot;number_format&quot;: &quot;{:,.0f}&quot;,
+    },
+]
+
+rows = [
+    {&quot;quantity&quot;: 12400},
+    {&quot;quantity&quot;: 820},
+]
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;, padx=16, pady=16)
+
+app.mainloop()</code></pre></div>
+<p>Builder methods for number columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;quantity&quot;).number(format=None)</code></td><td>Optional format string or callable <code>(value) -&gt; str</code></td><td>Sets <code>type=&quot;number&quot;</code> and optional <code>number_format</code>.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for number columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;number&quot;</code></td><td>Uses numeric display and numeric sorting.</td></tr>
+<tr><td><code>align</code></td><td><code>&quot;right&quot;</code></td><td><code>&quot;left&quot;</code>, <code>&quot;center&quot;</code>, or <code>&quot;right&quot;</code></td><td>Alignment. Number columns default to right alignment.</td></tr>
+<tr><td><code>number_format</code></td><td><code>None</code></td><td>Format string using <code>.format(number)</code> or callable <code>(value) -&gt; str</code></td><td>Display format for numeric values.</td></tr>
+</tbody></table></div>
+<h3 id="percentage">Percentage</h3>
+<p>Percentage columns right-align by default, sort numerically, and format numeric row values with a percent sign.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable
+
+
+app = ctk.CTk()
+app.title(&quot;Percentage Column&quot;)
+app.geometry(&quot;540x260&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(0, weight=1)
+
+columns = [
+    {
+        &quot;key&quot;: &quot;margin&quot;,
+        &quot;title&quot;: &quot;Margin&quot;,
+        &quot;width&quot;: 150,
+        &quot;type&quot;: &quot;percentage&quot;,
+        &quot;percentage_format&quot;: &quot;{value:.1f}%&quot;,
+    },
+]
+
+rows = [
+    {&quot;margin&quot;: 18.4},
+    {&quot;margin&quot;: 7.5},
+]
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;, padx=16, pady=16)
+
+app.mainloop()</code></pre></div>
+<p>For ratio values such as <code>0.184</code>, set <code>percentage_multiplier</code> to <code>100</code> before display.</p>
+<p>Builder methods for percentage columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;margin&quot;).percentage(format=&quot;{value:.0f}%&quot;, multiplier=1.0)</code></td><td>Keyword-only format string and display multiplier</td><td>Sets <code>type=&quot;percentage&quot;</code>, <code>percentage_format</code>, and <code>percentage_multiplier</code>.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for percentage columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;percentage&quot;</code></td><td>Uses percentage display and numeric sorting.</td></tr>
+<tr><td><code>align</code></td><td><code>&quot;right&quot;</code></td><td><code>&quot;left&quot;</code>, <code>&quot;center&quot;</code>, or <code>&quot;right&quot;</code></td><td>Alignment. Percentage columns default to right alignment.</td></tr>
+<tr><td><code>percentage_format</code></td><td><code>&quot;{value:.0f}%&quot;</code></td><td>Format string using <code>value</code>, <code>raw_value</code>, and <code>multiplier</code>; positional <code>{}</code> also receives the display value.</td><td>Display format for percentage values.</td></tr>
+<tr><td><code>percentage_multiplier</code></td><td><code>1.0</code></td><td>Number greater than <code>0</code></td><td>Multiplies the raw numeric value before formatting.</td></tr>
+</tbody></table></div>
+<h3 id="currency">Currency</h3>
+<p>Currency columns sort numerically and format money values.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable
+
+
+app = ctk.CTk()
+app.title(&quot;Currency Column&quot;)
+app.geometry(&quot;560x260&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(0, weight=1)
+
+columns = [
+    {
+        &quot;key&quot;: &quot;amount&quot;,
+        &quot;title&quot;: &quot;Amount&quot;,
+        &quot;width&quot;: 150,
+        &quot;type&quot;: &quot;currency&quot;,
+        &quot;currency_symbol&quot;: &quot;GBP &quot;,
+        &quot;currency_format&quot;: &quot;{symbol}{value:,.2f}&quot;,
+        &quot;currency_negative_format&quot;: &quot;({symbol}{value:,.2f})&quot;,
+    },
+]
+
+rows = [
+    {&quot;amount&quot;: 12640.5},
+    {&quot;amount&quot;: -2450.75},
+]
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;, padx=16, pady=16)
+
+app.mainloop()</code></pre></div>
+<p>Builder methods for currency columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;amount&quot;).currency(symbol=&quot;$&quot;, format=&quot;{symbol}{value:,.2f}&quot;, negative_format=&quot;-{symbol}{value:,.2f}&quot;)</code></td><td>Keyword-only formatting options</td><td>Sets <code>type=&quot;currency&quot;</code> and currency formatting.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for currency columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;currency&quot;</code></td><td>Uses currency display and numeric sorting.</td></tr>
+<tr><td><code>align</code></td><td><code>&quot;right&quot;</code></td><td><code>&quot;left&quot;</code>, <code>&quot;center&quot;</code>, or <code>&quot;right&quot;</code></td><td>Alignment. Currency columns default to right alignment.</td></tr>
+<tr><td><code>currency_symbol</code></td><td><code>&quot;$&quot;</code></td><td>String</td><td>Symbol or prefix used by currency format strings.</td></tr>
+<tr><td><code>currency_format</code></td><td><code>&quot;{symbol}{value:,.2f}&quot;</code></td><td>Format string using <code>symbol</code>, <code>value</code>, and <code>signed_value</code></td><td>Format for zero and positive values.</td></tr>
+<tr><td><code>currency_negative_format</code></td><td><code>&quot;-{symbol}{value:,.2f}&quot;</code></td><td>Format string using <code>symbol</code>, absolute <code>value</code>, and <code>signed_value</code></td><td>Format for negative values.</td></tr>
+</tbody></table></div>
+<h3 id="date">Date</h3>
+<p>Date columns accept <code>datetime.date</code>, <code>datetime.datetime</code>, and ISO date strings.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from datetime import date
+
+import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable
+
+
+app = ctk.CTk()
+app.title(&quot;Date Column&quot;)
+app.geometry(&quot;560x260&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(0, weight=1)
+
+columns = [
+    {&quot;key&quot;: &quot;due&quot;, &quot;title&quot;: &quot;Due&quot;, &quot;width&quot;: 150, &quot;type&quot;: &quot;date&quot;, &quot;date_format&quot;: &quot;%d %b %Y&quot;},
+]
+
+rows = [
+    {&quot;due&quot;: date(2026, 6, 12)},
+    {&quot;due&quot;: &quot;2026-06-18&quot;},
+]
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;, padx=16, pady=16)
+
+app.mainloop()</code></pre></div>
+<p>Builder methods for date columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;due&quot;).date(fmt=&quot;%Y-%m-%d&quot;)</code></td><td><code>strftime</code> format string</td><td>Sets <code>type=&quot;date&quot;</code> and <code>date_format</code>.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for date columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;date&quot;</code></td><td>Uses date display and date-aware sorting.</td></tr>
+<tr><td><code>date_format</code></td><td><code>&quot;%Y-%m-%d&quot;</code></td><td><code>strftime</code> format string</td><td>Display format for parsed date values.</td></tr>
+</tbody></table></div>
+<h3 id="datetime">Datetime</h3>
+<p>Datetime columns accept <code>datetime.datetime</code>, <code>datetime.date</code>, and ISO datetime strings.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from datetime import datetime
+
+import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable
+
+
+app = ctk.CTk()
+app.title(&quot;Datetime Column&quot;)
+app.geometry(&quot;600x260&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(0, weight=1)
+
+columns = [
+    {
+        &quot;key&quot;: &quot;updated&quot;,
+        &quot;title&quot;: &quot;Updated&quot;,
+        &quot;width&quot;: 180,
+        &quot;type&quot;: &quot;datetime&quot;,
+        &quot;datetime_format&quot;: &quot;%d %b %H:%M&quot;,
+    },
+]
+
+rows = [
+    {&quot;updated&quot;: datetime(2026, 6, 4, 15, 45)},
+    {&quot;updated&quot;: &quot;2026-06-05T09:15:00&quot;},
+]
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;, padx=16, pady=16)
+
+app.mainloop()</code></pre></div>
+<p>Builder methods for datetime columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;updated&quot;).datetime(fmt=&quot;%Y-%m-%d %H:%M&quot;)</code></td><td><code>strftime</code> format string</td><td>Sets <code>type=&quot;datetime&quot;</code> and <code>datetime_format</code>.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for datetime columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;datetime&quot;</code></td><td>Uses datetime display and datetime-aware sorting.</td></tr>
+<tr><td><code>datetime_format</code></td><td><code>&quot;%Y-%m-%d %H:%M&quot;</code></td><td><code>strftime</code> format string</td><td>Display format for parsed datetime values.</td></tr>
+</tbody></table></div>
+<h3 id="badge">Badge</h3>
+<p>Badge columns draw a rounded label for status-like values.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable
+
+
+app = ctk.CTk()
+app.title(&quot;Badge Column&quot;)
+app.geometry(&quot;560x260&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(0, weight=1)
+
+columns = [
+    {
+        &quot;key&quot;: &quot;status&quot;,
+        &quot;title&quot;: &quot;Status&quot;,
+        &quot;width&quot;: 150,
+        &quot;type&quot;: &quot;badge&quot;,
+        &quot;badge_colors&quot;: {&quot;Open&quot;: &quot;#22c55e&quot;, &quot;Closed&quot;: &quot;#64748b&quot;, &quot;Blocked&quot;: &quot;#ef4444&quot;},
+        &quot;badge_fallback_color&quot;: &quot;#94a3b8&quot;,
+    },
+]
+
+rows = [
+    {&quot;status&quot;: &quot;Open&quot;},
+    {&quot;status&quot;: &quot;Blocked&quot;},
+]
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;, padx=16, pady=16)
+
+app.mainloop()</code></pre></div>
+<p>Builder methods for badge columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;status&quot;).badge(colors=None, fallback_color=None, fallback_handler=None)</code></td><td>Optional color mapping, fallback color, and fallback handler</td><td>Sets <code>type=&quot;badge&quot;</code> and badge styling options.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for badge columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;badge&quot;</code></td><td>Draws the value as a rounded badge.</td></tr>
+<tr><td><code>badge_colors</code></td><td><code>{}</code></td><td>Mapping of displayed text to color string or light/dark tuple</td><td>Fill color for known badge values.</td></tr>
+<tr><td><code>badge_fallback_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple</td><td>Fill color when the value is not in <code>badge_colors</code>.</td></tr>
+<tr><td><code>badge_fallback_handler</code></td><td><code>None</code></td><td>Callable <code>(value, row, column) -&gt; BadgeStyle, color, or None</code></td><td>Dynamic fallback text and colors.</td></tr>
+</tbody></table></div>
+<h3 id="checkbox">Checkbox</h3>
+<p>Checkbox columns display boolean row values and toggle them when clicked. The checked state is based on the truthiness of the row value. Toggle callbacks receive a <code>TableRowEvent</code> with the updated row, <code>column_key</code> set to the checkbox column, and <code>action_key</code> set to <code>&quot;checkbox&quot;</code>.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable, TableRowEvent
+
+
+app = ctk.CTk()
+app.title(&quot;Checkbox Column&quot;)
+app.geometry(&quot;560x260&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(0, weight=1)
+
+columns = [
+    {&quot;key&quot;: &quot;approved&quot;, &quot;title&quot;: &quot;Approved&quot;, &quot;width&quot;: 130, &quot;type&quot;: &quot;checkbox&quot;},
+]
+
+rows = [
+    {&quot;approved&quot;: True},
+    {&quot;approved&quot;: False},
+]
+
+
+def handle_checkbox(event: TableRowEvent) -&gt; None:
+    approved = event.row[event.column_key]
+
+
+table = CTkDataTable(
+    app,
+    columns=columns,
+    data=rows,
+    on_checkbox_toggle=handle_checkbox,
+)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;, padx=16, pady=16)
+
+app.mainloop()</code></pre></div>
+<p>Builder methods for checkbox columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;approved&quot;).checkbox()</code></td><td>None</td><td>Sets <code>type=&quot;checkbox&quot;</code>.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for checkbox columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;checkbox&quot;</code></td><td>Draws a clickable checkbox.</td></tr>
+<tr><td><code>align</code></td><td><code>&quot;center&quot;</code></td><td><code>&quot;left&quot;</code>, <code>&quot;center&quot;</code>, or <code>&quot;right&quot;</code></td><td>Alignment. Checkbox columns default to center alignment.</td></tr>
+</tbody></table></div>
+<h3 id="progress">Progress</h3>
+<p>Progress columns draw a numeric value as a progress bar.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable
+
+
+app = ctk.CTk()
+app.title(&quot;Progress Column&quot;)
+app.geometry(&quot;620x260&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(0, weight=1)
+
+columns = [
+    {
+        &quot;key&quot;: &quot;completion&quot;,
+        &quot;title&quot;: &quot;Complete&quot;,
+        &quot;width&quot;: 180,
+        &quot;type&quot;: &quot;progress&quot;,
+        &quot;progress_min&quot;: 0,
+        &quot;progress_max&quot;: 100,
+        &quot;progress_color&quot;: &quot;#2563eb&quot;,
+        &quot;progress_background_color&quot;: &quot;#dbeafe&quot;,
+        &quot;progress_show_text&quot;: True,
+        &quot;progress_text_format&quot;: &quot;{percent:.0f}%&quot;,
+    },
+]
+
+rows = [
+    {&quot;completion&quot;: 72},
+    {&quot;completion&quot;: 35},
+]
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;, padx=16, pady=16)
+
+app.mainloop()</code></pre></div>
+<p>Builder methods for progress columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;completion&quot;).progress(minimum=0.0, maximum=100.0, color=None, background_color=None, show_text=True, text_format=&quot;{percent:.0f}%&quot;)</code></td><td>Keyword-only progress settings</td><td>Sets <code>type=&quot;progress&quot;</code> and progress bar options.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for progress columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;progress&quot;</code></td><td>Draws a progress bar and sorts numerically.</td></tr>
+<tr><td><code>align</code></td><td><code>&quot;center&quot;</code></td><td><code>&quot;left&quot;</code>, <code>&quot;center&quot;</code>, or <code>&quot;right&quot;</code></td><td>Alignment. Progress columns default to center alignment.</td></tr>
+<tr><td><code>progress_min</code></td><td><code>0.0</code></td><td>Number less than <code>progress_max</code></td><td>Minimum value for the bar.</td></tr>
+<tr><td><code>progress_max</code></td><td><code>100.0</code></td><td>Number greater than <code>progress_min</code></td><td>Maximum value for the bar.</td></tr>
+<tr><td><code>progress_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple</td><td>Progress fill color.</td></tr>
+<tr><td><code>progress_background_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple</td><td>Progress track color.</td></tr>
+<tr><td><code>progress_show_text</code></td><td><code>True</code></td><td><code>True</code> or <code>False</code></td><td>Whether text is drawn over the bar.</td></tr>
+<tr><td><code>progress_text_format</code></td><td><code>&quot;{percent:.0f}%&quot;</code></td><td>Format string using <code>value</code>, <code>minimum</code>, <code>maximum</code>, <code>min</code>, <code>max</code>, <code>percent</code>, and <code>ratio</code></td><td>Progress text.</td></tr>
+</tbody></table></div>
+<h3 id="link">Link</h3>
+<p>Link columns draw underlined text. A click calls <code>on_link_click</code> with a <code>TableRowEvent</code>.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable, TableRowEvent
+
+
+app = ctk.CTk()
+app.title(&quot;Link Column&quot;)
+app.geometry(&quot;620x300&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(1, weight=1)
+
+message = ctk.CTkLabel(app, text=&quot;Click a profile link&quot;, anchor=&quot;w&quot;)
+message.grid(row=0, column=0, sticky=&quot;ew&quot;, padx=16, pady=(16, 8))
+
+columns = [
+    {&quot;key&quot;: &quot;name&quot;, &quot;title&quot;: &quot;Customer&quot;, &quot;width&quot;: 220},
+    {&quot;key&quot;: &quot;profile&quot;, &quot;title&quot;: &quot;Profile&quot;, &quot;width&quot;: 140, &quot;type&quot;: &quot;link&quot;, &quot;link_color&quot;: &quot;#2563eb&quot;},
+]
+
+rows = [
+    {&quot;name&quot;: &quot;Northwind Components&quot;, &quot;profile&quot;: &quot;Open profile&quot;},
+    {&quot;name&quot;: &quot;Meridian Foods&quot;, &quot;profile&quot;: &quot;Open profile&quot;},
+]
+
+
+def handle_link(event: TableRowEvent) -&gt; None:
+    message.configure(text=f&quot;Link clicked for {event.row[&#x27;name&#x27;]}&quot;)
+
+
+table = CTkDataTable(app, columns=columns, data=rows, on_link_click=handle_link)
+table.grid(row=1, column=0, sticky=&quot;nsew&quot;, padx=16, pady=(0, 16))
+
+app.mainloop()</code></pre></div>
+<p>Builder methods for link columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;profile&quot;).link(color=None)</code></td><td>Optional color string or light/dark tuple</td><td>Sets <code>type=&quot;link&quot;</code> and optional <code>link_color</code>.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for link columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;link&quot;</code></td><td>Draws clickable underlined text.</td></tr>
+<tr><td><code>link_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple</td><td>Link text and underline color.</td></tr>
+</tbody></table></div>
+<h3 id="pill-list">Pill List</h3>
+<p>Pill list columns display tags from a list, tuple, set, frozenset, comma-separated string, or single value.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable
+
+
+app = ctk.CTk()
+app.title(&quot;Pill List Column&quot;)
+app.geometry(&quot;640x260&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(0, weight=1)
+
+columns = [
+    {
+        &quot;key&quot;: &quot;tags&quot;,
+        &quot;title&quot;: &quot;Tags&quot;,
+        &quot;width&quot;: 240,
+        &quot;type&quot;: &quot;pill_list&quot;,
+        &quot;pill_colors&quot;: {&quot;Urgent&quot;: &quot;#ef4444&quot;, &quot;Finance&quot;: &quot;#0ea5e9&quot;},
+        &quot;pill_fallback_color&quot;: &quot;#64748b&quot;,
+        &quot;pill_text_color&quot;: &quot;#ffffff&quot;,
+    },
+]
+
+rows = [
+    {&quot;tags&quot;: [&quot;Urgent&quot;, &quot;Finance&quot;]},
+    {&quot;tags&quot;: &quot;Sales, Follow-up&quot;},
+]
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;, padx=16, pady=16)
+
+app.mainloop()</code></pre></div>
+<p>Builder methods for pill list columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;tags&quot;).pill_list(colors=None, fallback_color=None, text_color=None)</code></td><td>Optional color mapping, fallback color, and text color</td><td>Sets <code>type=&quot;pill_list&quot;</code> and pill styling options.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for pill list columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;pill_list&quot;</code></td><td>Draws values as compact tag pills.</td></tr>
+<tr><td><code>pill_colors</code></td><td><code>{}</code></td><td>Mapping of pill text to color string or light/dark tuple</td><td>Fill color for known pill values.</td></tr>
+<tr><td><code>pill_fallback_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple</td><td>Fill color for pill values not found in <code>pill_colors</code>.</td></tr>
+<tr><td><code>pill_text_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple</td><td>Text color for every pill in the column.</td></tr>
+</tbody></table></div>
+<h3 id="action">Action</h3>
+<p>Action columns draw row-level buttons. A click calls <code>on_action_click</code> with <code>event.action_key</code>.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable, TableRowEvent
+
+
+app = ctk.CTk()
+app.title(&quot;Action Column&quot;)
+app.geometry(&quot;720x300&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(1, weight=1)
+
+message = ctk.CTkLabel(app, text=&quot;Click an action&quot;, anchor=&quot;w&quot;)
+message.grid(row=0, column=0, sticky=&quot;ew&quot;, padx=16, pady=(16, 8))
+
+columns = [
+    {&quot;key&quot;: &quot;id&quot;, &quot;title&quot;: &quot;ID&quot;, &quot;width&quot;: 80, &quot;type&quot;: &quot;number&quot;},
+    {&quot;key&quot;: &quot;name&quot;, &quot;title&quot;: &quot;Customer&quot;, &quot;width&quot;: 220},
+    {
+        &quot;key&quot;: &quot;actions&quot;,
+        &quot;title&quot;: &quot;Actions&quot;,
+        &quot;width&quot;: 180,
+        &quot;type&quot;: &quot;action&quot;,
+        &quot;sortable&quot;: False,
+        &quot;actions&quot;: [
+            {&quot;key&quot;: &quot;view&quot;, &quot;label&quot;: &quot;View&quot;},
+            {&quot;key&quot;: &quot;delete&quot;, &quot;label&quot;: &quot;Delete&quot;, &quot;fg_color&quot;: &quot;#fee2e2&quot;, &quot;text_color&quot;: &quot;#991b1b&quot;},
+        ],
+    },
+]
+
+rows = [
+    {&quot;id&quot;: 1, &quot;name&quot;: &quot;Northwind Components&quot;, &quot;actions&quot;: None},
+    {&quot;id&quot;: 2, &quot;name&quot;: &quot;Meridian Foods&quot;, &quot;actions&quot;: None},
+]
+
+
+def handle_action(event: TableRowEvent) -&gt; None:
+    message.configure(text=f&quot;{event.action_key} clicked for {event.row[&#x27;name&#x27;]}&quot;)
+
+
+table = CTkDataTable(app, columns=columns, data=rows, on_action_click=handle_action)
+table.grid(row=1, column=0, sticky=&quot;nsew&quot;, padx=16, pady=(0, 16))
+
+app.mainloop()</code></pre></div>
+<p>Builder methods for action columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>What it sets</th></tr></thead>
+<tbody>
+<tr><td><code>Column(&quot;actions&quot;).action(buttons, sortable=False)</code></td><td>Sequence of action strings, dictionaries, or <code>TableAction</code> objects</td><td>Sets <code>type=&quot;action&quot;</code>, <code>actions</code>, and <code>sortable</code>.</td></tr>
+</tbody></table></div>
+<p>Adjustable options for action columns:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>What it changes</th></tr></thead>
+<tbody>
+<tr><td>Common options</td><td>See common options table</td><td>See common options table</td><td>Key, title, width, alignment, visibility, sorting, formatting, and metadata.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td><code>&quot;action&quot;</code></td><td>Draws row-level action buttons.</td></tr>
+<tr><td><code>align</code></td><td><code>&quot;center&quot;</code></td><td><code>&quot;left&quot;</code>, <code>&quot;center&quot;</code>, or <code>&quot;right&quot;</code></td><td>Alignment. Action columns default to center alignment.</td></tr>
+<tr><td><code>sortable</code></td><td><code>True</code> for dictionary columns; <code>False</code> from <code>Column(...).action()</code> unless changed</td><td><code>True</code> or <code>False</code></td><td>Whether header clicks sort this action column. Usually set to <code>False</code>.</td></tr>
+<tr><td><code>actions</code></td><td><code>()</code></td><td>Sequence of <code>TableAction</code>, mapping, or string actions</td><td>Buttons drawn in each row.</td></tr>
+</tbody></table></div>
+<h2 id="major-features">Major Features</h2>
+<h3 id="built-in-search-entry">Built-In Search Entry</h3>
+<p>Set <code>searchable=True</code> to add a search entry above the table. Use <code>search_delay_ms</code> to debounce typing.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table = CTkDataTable(
+    app,
+    columns=columns,
+    data=rows,
+    searchable=True,
+    search_delay_ms=150,
+    on_search=lambda query: None,
+)
+table.grid(row=0, column=0, sticky=&quot;nsew&quot;)</code></pre></div>
+<p>Searching is case-insensitive. It checks visible, non-action columns.</p>
+<h3 id="external-search-entry">External Search Entry</h3>
+<p>Use an external <code>CTkEntry</code> when you want the search box in your own toolbar.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">search = ctk.CTkEntry(app, placeholder_text=&quot;Search customers&quot;)
+search.grid(row=0, column=0, sticky=&quot;ew&quot;)
+
+table = CTkDataTable(app, columns=columns, data=rows)
+table.grid(row=1, column=0, sticky=&quot;nsew&quot;)
+
+search.bind(&quot;&lt;KeyRelease&gt;&quot;, lambda _event: table.search(search.get()))</code></pre></div>
+<h3 id="sorting">Sorting</h3>
+<p>Header clicks sort sortable columns. Clicking the same header again toggles direction. Use <code>sort_by()</code> from code when your app decides the sort order.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">def report_sort(column_key: str, ascending: bool) -&gt; None:
+    sort_state = (column_key, ascending)
+
+
+table = CTkDataTable(app, columns=columns, data=rows, on_sort=report_sort)
+table.sort_by(&quot;amount&quot;, ascending=False)</code></pre></div>
+<p>Missing values sort last. <code>number</code>, <code>percentage</code>, <code>currency</code>, and <code>progress</code> columns sort numerically. <code>date</code> and <code>datetime</code> columns sort by parsed date values. <code>checkbox</code> columns sort by boolean value. Other columns sort case-insensitively as text.</p>
+<h3 id="column-filters">Column Filters</h3>
+<p>Column filters combine with global search. A filtered column shows a header indicator.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table.set_column_filter(&quot;status&quot;, {&quot;type&quot;: &quot;equals&quot;, &quot;value&quot;: &quot;Open&quot;})
+table.set_column_filter(&quot;amount&quot;, {&quot;type&quot;: &quot;range&quot;, &quot;min&quot;: 100, &quot;max&quot;: 500})
+table.set_column_filter(&quot;due&quot;, {&quot;type&quot;: &quot;date_range&quot;, &quot;min&quot;: &quot;2026-06-01&quot;, &quot;max&quot;: &quot;2026-06-30&quot;})
+
+active_filters = table.get_column_filters()
+
+table.clear_column_filter(&quot;status&quot;)
+table.clear_column_filters()</code></pre></div>
+<p>Supported mapping filter definitions:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Type</th><th>Definition</th><th>Match behavior</th></tr></thead>
+<tbody>
+<tr><td><code>contains</code></td><td><code>{&quot;type&quot;: &quot;contains&quot;, &quot;value&quot;: &quot;north&quot;}</code></td><td>Case-insensitive substring match.</td></tr>
+<tr><td><code>equals</code></td><td><code>{&quot;type&quot;: &quot;equals&quot;, &quot;value&quot;: &quot;Open&quot;}</code></td><td>Exact Python equality.</td></tr>
+<tr><td><code>not_equals</code></td><td><code>{&quot;type&quot;: &quot;not_equals&quot;, &quot;value&quot;: &quot;Closed&quot;}</code></td><td>Exact Python inequality.</td></tr>
+<tr><td><code>in</code></td><td><code>{&quot;type&quot;: &quot;in&quot;, &quot;values&quot;: [&quot;Open&quot;, &quot;Paused&quot;]}</code></td><td>Value is in a non-string iterable.</td></tr>
+<tr><td><code>bool</code></td><td><code>{&quot;type&quot;: &quot;bool&quot;, &quot;value&quot;: True}</code></td><td><code>bool(value)</code> matches the expected boolean.</td></tr>
+<tr><td><code>range</code></td><td><code>{&quot;type&quot;: &quot;range&quot;, &quot;min&quot;: 100, &quot;max&quot;: 500}</code></td><td>Numeric value is within optional min and max bounds.</td></tr>
+<tr><td><code>date_range</code></td><td><code>{&quot;type&quot;: &quot;date_range&quot;, &quot;min&quot;: &quot;2026-06-01&quot;, &quot;max&quot;: &quot;2026-06-30&quot;}</code></td><td>Parsed date or datetime is within optional bounds.</td></tr>
+</tbody></table></div>
+<p>You can also pass a callable:</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table.set_column_filter(
+    &quot;amount&quot;,
+    lambda value, row: value is not None and float(value) &gt;= 1000 and row[&quot;status&quot;] == &quot;Open&quot;,
+)</code></pre></div>
+<h3 id="selection-and-multi-select">Selection and Multi-Select</h3>
+<p>Single selection is enabled by default. Set <code>multi_select=True</code> for Ctrl-click toggle selection and Shift-click range selection.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table = CTkDataTable(app, columns=columns, data=rows, multi_select=True)
+
+selected_row = table.get_selected_row()
+selected_rows = table.get_selected_rows()
+source_indices = table.get_selected_indices()
+view_indices = table.get_selected_view_indices()</code></pre></div>
+<p>Keyboard navigation works when the table canvas has focus:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Key</th><th>Behavior</th></tr></thead>
+<tbody>
+<tr><td>Up, Down</td><td>Move one row.</td></tr>
+<tr><td>Page Up, Page Down</td><td>Move by one page.</td></tr>
+<tr><td>Home, End</td><td>Move to first or last visible row.</td></tr>
+<tr><td>Enter</td><td>Calls <code>on_row_double_click</code> for the focused row.</td></tr>
+<tr><td>Shift with movement</td><td>Extends the selection range in multi-select mode.</td></tr>
+</tbody></table></div>
+<h3 id="bulk-actions-with-multi-select">Bulk Actions with Multi-Select</h3>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">def delete_selected() -&gt; None:
+    removed = table.delete_selected_rows()
+    deleted_count = removed
+
+
+button = ctk.CTkButton(app, text=&quot;Delete selected&quot;, command=delete_selected)
+button.grid(row=0, column=0, sticky=&quot;w&quot;)
+
+table = CTkDataTable(app, columns=columns, data=rows, multi_select=True)
+table.grid(row=1, column=0, sticky=&quot;nsew&quot;)</code></pre></div>
+<h3 id="row-cell-link-action-and-checkbox-callbacks">Row, Cell, Link, Action, and Checkbox Callbacks</h3>
+<p>Interaction callbacks receive <code>TableRowEvent</code> for row-aware events. Action clicks do not also fire row or cell callbacks. Link clicks fire <code>on_link_click</code> when that callback is set. Checkbox clicks toggle the row value and fire <code>on_checkbox_toggle</code> when that callback is set.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from CTkDataTable import TableRowEvent
+
+
+def row_clicked(event: TableRowEvent) -&gt; None:
+    row_identity = (event.source_index, event.view_index)
+
+
+def cell_clicked(event: TableRowEvent) -&gt; None:
+    selected_column = event.column_key
+
+
+def action_clicked(event: TableRowEvent) -&gt; None:
+    selected_action = event.action_key
+
+
+def checkbox_toggled(event: TableRowEvent) -&gt; None:
+    checked = event.row[event.column_key]
+
+
+table = CTkDataTable(
+    app,
+    columns=columns,
+    data=rows,
+    on_row_click=row_clicked,
+    on_cell_click=cell_clicked,
+    on_action_click=action_clicked,
+    on_checkbox_toggle=checkbox_toggled,
+)</code></pre></div>
+<h3 id="context-menus">Context Menus</h3>
+<p>Pass <code>context_menu</code> to show right-click row actions. On macOS or single-button setups, Control-click is also bound.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from CTkDataTable import TableRowEvent
+
+
+def handle_context(event: TableRowEvent) -&gt; None:
+    if event.action_key == &quot;copy_id&quot;:
+        app.clipboard_clear()
+        app.clipboard_append(str(event.row[&quot;id&quot;]))
+
+
+table = CTkDataTable(
+    app,
+    columns=columns,
+    data=rows,
+    context_menu=[
+        {&quot;key&quot;: &quot;copy_id&quot;, &quot;label&quot;: &quot;Copy ID&quot;},
+        {&quot;key&quot;: &quot;view&quot;, &quot;label&quot;: &quot;View&quot;},
+        &quot;archive&quot;,
+    ],
+    on_context_action=handle_context,
+)</code></pre></div>
+<h3 id="resizable-columns-and-horizontal-scroll">Resizable Columns and Horizontal Scroll</h3>
+<p>Set <code>resizable_columns=True</code> to let users drag header dividers. Set <code>horizontal_scroll=True</code> when the total column width is wider than the table.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table = CTkDataTable(
+    app,
+    columns=columns,
+    data=rows,
+    resizable_columns=True,
+    min_column_width=64,
+    horizontal_scroll=True,
+)
+
+table.set_column_width(&quot;name&quot;, 260)
+name_width = table.get_column_width(&quot;name&quot;)</code></pre></div>
+<p>When horizontal scrolling is enabled, Shift plus mouse wheel scrolls horizontally.</p>
+<h3 id="table-styling">Table Styling</h3>
+<p>Use <code>style</code> for table-wide colors, spacing, and corner radii. Pass a dictionary or a <code>TableStyle</code> object when creating the table. Later, call <code>configure_style()</code> to merge changes into the current style, or <code>set_style()</code> to replace it.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from CTkDataTable import CTkDataTable, TableStyle
+
+
+table = CTkDataTable(
+    app,
+    columns=columns,
+    data=rows,
+    style={
+        &quot;surface_bg&quot;: &quot;#ffffff&quot;,
+        &quot;header_bg&quot;: &quot;#111827&quot;,
+        &quot;header_text_color&quot;: &quot;#ffffff&quot;,
+        &quot;row_alt_bg&quot;: &quot;#f8fafc&quot;,
+        &quot;hover_bg&quot;: &quot;#e0f2fe&quot;,
+        &quot;selected_bg&quot;: &quot;#2563eb&quot;,
+        &quot;selected_text_color&quot;: &quot;#ffffff&quot;,
+        &quot;divider_color&quot;: &quot;#dbe3ef&quot;,
+        &quot;border_color&quot;: &quot;#cbd5e1&quot;,
+        &quot;corner_radius&quot;: 12,
+        &quot;cell_padding_x&quot;: 14,
+        &quot;badge_radius&quot;: 7,
+        &quot;checkbox_radius&quot;: 4,
+        &quot;action_radius&quot;: 6,
+    },
+)
+
+table.configure_style(
+    link_text_color=&quot;#0f766e&quot;,
+    checkbox_fill_checked=&quot;#16a34a&quot;,
+    action_bg=&quot;#eff6ff&quot;,
+)
+
+table.set_style(
+    TableStyle(
+        surface_bg=(&quot;#ffffff&quot;, &quot;#111827&quot;),
+        text_color=(&quot;#111827&quot;, &quot;#e5e7eb&quot;),
+        header_bg=(&quot;#f1f5f9&quot;, &quot;#020617&quot;),
+    )
+)</code></pre></div>
+<p>Color options accept normal color strings or CustomTkinter light/dark tuples. Dimension options must be non-negative numbers. <code>style</code> also accepts aliases such as <code>fg_color</code>, <code>text</code>, <code>divider</code>, and <code>action_text</code>; the canonical option names are listed in the <code>TableStyle</code> reference.</p>
+<h3 id="style-hooks">Style Hooks</h3>
+<p>Style hooks are opt-in. Set <code>enable_style_hooks=True</code>, then provide <code>row_style</code> and/or <code>cell_style</code>.</p>
+<p>Style callbacks return <code>None</code> or a mapping with:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Key</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td><code>fg_color</code></td><td>Row or cell background color.</td></tr>
+<tr><td><code>text_color</code></td><td>Row or cell text color.</td></tr>
+</tbody></table></div>
+<p>Colors can be strings or CustomTkinter light/dark tuples.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">def row_style(row):
+    if row[&quot;status&quot;] == &quot;Overdue&quot;:
+        return {&quot;fg_color&quot;: &quot;#fff7ed&quot;, &quot;text_color&quot;: &quot;#9a3412&quot;}
+    return None
+
+
+def cell_style(_row, column_key, value):
+    if column_key == &quot;amount&quot; and value &lt; 0:
+        return {&quot;text_color&quot;: &quot;#dc2626&quot;}
+    return None
+
+
+table = CTkDataTable(
+    app,
+    columns=columns,
+    data=rows,
+    enable_style_hooks=True,
+    row_style=row_style,
+    cell_style=cell_style,
+)</code></pre></div>
+<h3 id="badgestyle-for-dynamic-badges">BadgeStyle for Dynamic Badges</h3>
+<p>Use <code>BadgeStyle</code> when a badge fallback handler needs to set custom text and colors.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from typing import Any, Mapping
+
+from CTkDataTable import BadgeStyle, TableColumn
+
+
+def status_fallback(value: Any, _row: Mapping[str, Any], _column: TableColumn) -&gt; BadgeStyle:
+    text = str(value or &quot;Unknown&quot;)
+    return BadgeStyle(text=text, fill_color=&quot;#64748b&quot;, text_color=&quot;#ffffff&quot;)
+
+
+columns = [
+    {
+        &quot;key&quot;: &quot;status&quot;,
+        &quot;title&quot;: &quot;Status&quot;,
+        &quot;width&quot;: 140,
+        &quot;type&quot;: &quot;badge&quot;,
+        &quot;badge_colors&quot;: {&quot;Open&quot;: &quot;#22c55e&quot;, &quot;Closed&quot;: &quot;#64748b&quot;},
+        &quot;badge_fallback_handler&quot;: status_fallback,
+    }
+]</code></pre></div>
+<h3 id="footer-summaries">Footer Summaries</h3>
+<p>Set <code>footer=True</code> and provide <code>summaries</code>. Summaries run against the current visible rows after search and column filters.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table = CTkDataTable(
+    app,
+    columns=columns,
+    data=rows,
+    footer=True,
+    footer_height=38,
+    summaries={
+        &quot;id&quot;: &quot;count&quot;,
+        &quot;amount&quot;: &quot;sum&quot;,
+        &quot;status&quot;: lambda visible_rows: f&quot;{len(visible_rows)} visible&quot;,
+    },
+)</code></pre></div>
+<p>Built-in summary names are <code>count</code>, <code>sum</code>, <code>avg</code>, <code>average</code>, <code>min</code>, and <code>max</code>. Unknown strings are displayed as literal footer text.</p>
+<h3 id="loading-state">Loading State</h3>
+<p>Use <code>set_loading(True)</code> before a reload that you schedule back into the Tkinter event loop.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">def reload_rows() -&gt; None:
+    table.set_loading(True)
+    app.after(50, finish_reload)
+
+
+def finish_reload() -&gt; None:
+    table.set_data(fetch_rows())
+    table.set_loading(False)</code></pre></div>
+<h3 id="async-loading">Async Loading</h3>
+<p>Use <code>load_async()</code> to run a row loader on a background thread. The widget sets its loading state, runs your function, then safely calls <code>set_data()</code> on the Tkinter thread.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">import time
+
+
+def fetch_rows():
+    time.sleep(1)
+    return [
+        {&quot;id&quot;: 1, &quot;name&quot;: &quot;Northwind Components&quot;, &quot;status&quot;: &quot;Open&quot;},
+        {&quot;id&quot;: 2, &quot;name&quot;: &quot;Meridian Foods&quot;, &quot;status&quot;: &quot;Closed&quot;},
+    ]
+
+
+def loaded(rows):
+    loaded_count = len(rows)
+
+
+def failed(error):
+    last_error = error
+
+
+thread = table.load_async(
+    fetch_rows,
+    on_success=loaded,
+    on_error=failed,
+    clear_on_error=False,
+)</code></pre></div>
+<p><code>load_async()</code> returns the daemon <code>threading.Thread</code>.</p>
+<h3 id="error-state">Error State</h3>
+<p>Use <code>set_error()</code> to show an error message without changing rows. Use <code>clear_error()</code> to return to the current data view.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table.set_error(&quot;Could not refresh customer data&quot;)
+table.clear_error()</code></pre></div>
+<h2 id="constructor-reference">Constructor Reference</h2>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">CTkDataTable(
+    master,
+    columns,
+    data=None,
+    *,
+    row_height=42,
+    header_height=44,
+    footer_height=38,
+    font=None,
+    header_font=None,
+    horizontal_scroll=False,
+    multi_select=False,
+    searchable=False,
+    search_delay_ms=0,
+    resizable_columns=False,
+    min_column_width=48,
+    style=None,
+    enable_style_hooks=False,
+    row_style=None,
+    cell_style=None,
+    context_menu=None,
+    on_context_action=None,
+    footer=False,
+    summaries=None,
+    empty_message=&quot;No records to display&quot;,
+    loading_message=&quot;Loading records...&quot;,
+    error_message=&quot;Could not load records&quot;,
+    on_row_click=None,
+    on_row_double_click=None,
+    on_cell_click=None,
+    on_action_click=None,
+    on_link_click=None,
+    on_checkbox_toggle=None,
+    on_sort=None,
+    on_search=None,
+    **frame_kwargs,
+)</code></pre></div>
+<p><code>CTkDataTable</code> inherits from <code>customtkinter.CTkFrame</code>. Extra keyword arguments are passed to the frame. If omitted, the table sets <code>corner_radius=12</code> and <code>border_width=1</code>.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Argument</th><th>Default</th><th>Accepted values</th><th>How to apply it</th></tr></thead>
+<tbody>
+<tr><td><code>master</code></td><td>Required</td><td>Parent widget such as <code>CTk</code>, <code>CTkFrame</code>, or a tab/container.</td><td>First positional argument.</td></tr>
+<tr><td><code>columns</code></td><td>Required</td><td>Sequence of dictionaries, <code>TableColumn</code>, or <code>Column</code> objects.</td><td><code>CTkDataTable(app, columns=columns)</code>.</td></tr>
+<tr><td><code>data</code></td><td><code>None</code></td><td>Iterable of row-like mapping objects. <code>None</code> becomes an empty table.</td><td>Pass at creation or call <code>set_data()</code>.</td></tr>
+<tr><td><code>row_height</code></td><td><code>42</code></td><td>Integer pixels, at least <code>28</code>.</td><td><code>row_height=48</code>.</td></tr>
+<tr><td><code>header_height</code></td><td><code>44</code></td><td>Integer pixels, at least <code>32</code>.</td><td><code>header_height=46</code>.</td></tr>
+<tr><td><code>footer_height</code></td><td><code>38</code></td><td>Integer pixels, at least <code>28</code>. Used when <code>footer=True</code>.</td><td><code>footer_height=40</code>.</td></tr>
+<tr><td><code>font</code></td><td><code>None</code></td><td>Tkinter/CustomTkinter font object or tuple accepted by Canvas text items.</td><td><code>font=(&quot;Segoe UI&quot;, 13)</code>.</td></tr>
+<tr><td><code>header_font</code></td><td><code>None</code></td><td>Font object or tuple. Defaults to <code>font</code> when supplied, otherwise a bold table default.</td><td><code>header_font=(&quot;Segoe UI&quot;, 13, &quot;bold&quot;)</code>.</td></tr>
+<tr><td><code>horizontal_scroll</code></td><td><code>False</code></td><td><code>True</code> or <code>False</code>.</td><td><code>horizontal_scroll=True</code>.</td></tr>
+<tr><td><code>multi_select</code></td><td><code>False</code></td><td><code>True</code> or <code>False</code>.</td><td><code>multi_select=True</code>.</td></tr>
+<tr><td><code>searchable</code></td><td><code>False</code></td><td><code>True</code> or <code>False</code>.</td><td><code>searchable=True</code>.</td></tr>
+<tr><td><code>search_delay_ms</code></td><td><code>0</code></td><td>Integer milliseconds, <code>0</code> or greater.</td><td><code>search_delay_ms=150</code>.</td></tr>
+<tr><td><code>resizable_columns</code></td><td><code>False</code></td><td><code>True</code> or <code>False</code>.</td><td><code>resizable_columns=True</code>.</td></tr>
+<tr><td><code>min_column_width</code></td><td><code>48</code></td><td>Integer pixels, at least <code>24</code>.</td><td><code>min_column_width=64</code>.</td></tr>
+<tr><td><code>style</code></td><td><code>None</code></td><td><code>TableStyle</code>, mapping, or <code>None</code>. Controls table-wide colors, spacing, and radii.</td><td><code>style={&quot;header_bg&quot;: &quot;#111827&quot;}</code>.</td></tr>
+<tr><td><code>enable_style_hooks</code></td><td><code>False</code></td><td><code>True</code> or <code>False</code>. Required for <code>row_style</code> and <code>cell_style</code>.</td><td><code>enable_style_hooks=True</code>.</td></tr>
+<tr><td><code>row_style</code></td><td><code>None</code></td><td>Callable <code>(row) -&gt; mapping or None</code>. Supports <code>fg_color</code> and <code>text_color</code>.</td><td><code>row_style=my_row_style</code>.</td></tr>
+<tr><td><code>cell_style</code></td><td><code>None</code></td><td>Callable <code>(row, column_key, value) -&gt; mapping or None</code>. Supports <code>fg_color</code> and <code>text_color</code>.</td><td><code>cell_style=my_cell_style</code>.</td></tr>
+<tr><td><code>context_menu</code></td><td><code>None</code></td><td>Sequence of <code>TableAction</code>, mapping, or string actions.</td><td><code>context_menu=[{&quot;key&quot;: &quot;copy&quot;, &quot;label&quot;: &quot;Copy&quot;}]</code>.</td></tr>
+<tr><td><code>on_context_action</code></td><td><code>None</code></td><td>Callable <code>(event: TableRowEvent) -&gt; None</code>.</td><td><code>on_context_action=handle_context</code>.</td></tr>
+<tr><td><code>footer</code></td><td><code>False</code></td><td><code>True</code> or <code>False</code>.</td><td><code>footer=True</code>.</td></tr>
+<tr><td><code>summaries</code></td><td><code>None</code></td><td>Mapping of column key to summary name or callback.</td><td><code>summaries={&quot;amount&quot;: &quot;sum&quot;}</code>.</td></tr>
+<tr><td><code>empty_message</code></td><td><code>&quot;No records to display&quot;</code></td><td>String.</td><td><code>empty_message=&quot;No customers yet&quot;</code>.</td></tr>
+<tr><td><code>loading_message</code></td><td><code>&quot;Loading records...&quot;</code></td><td>String.</td><td><code>loading_message=&quot;Loading customers...&quot;</code>.</td></tr>
+<tr><td><code>error_message</code></td><td><code>&quot;Could not load records&quot;</code></td><td>String. Used by <code>set_error(None)</code> and <code>load_async()</code> failures.</td><td><code>error_message=&quot;Load failed&quot;</code>.</td></tr>
+<tr><td><code>on_row_click</code></td><td><code>None</code></td><td>Callable <code>(event: TableRowEvent) -&gt; None</code>.</td><td><code>on_row_click=select_row</code>.</td></tr>
+<tr><td><code>on_row_double_click</code></td><td><code>None</code></td><td>Callable <code>(event: TableRowEvent) -&gt; None</code>. Also called by Enter.</td><td><code>on_row_double_click=open_row</code>.</td></tr>
+<tr><td><code>on_cell_click</code></td><td><code>None</code></td><td>Callable <code>(event: TableRowEvent) -&gt; None</code>.</td><td><code>on_cell_click=inspect_cell</code>.</td></tr>
+<tr><td><code>on_action_click</code></td><td><code>None</code></td><td>Callable <code>(event: TableRowEvent) -&gt; None</code>.</td><td><code>on_action_click=handle_action</code>.</td></tr>
+<tr><td><code>on_link_click</code></td><td><code>None</code></td><td>Callable <code>(event: TableRowEvent) -&gt; None</code>.</td><td><code>on_link_click=open_link</code>.</td></tr>
+<tr><td><code>on_checkbox_toggle</code></td><td><code>None</code></td><td>Callable <code>(event: TableRowEvent) -&gt; None</code>. Fires after a checkbox cell toggles.</td><td><code>on_checkbox_toggle=handle_checkbox</code>.</td></tr>
+<tr><td><code>on_sort</code></td><td><code>None</code></td><td>Callable <code>(column_key: str, ascending: bool) -&gt; None</code>.</td><td><code>on_sort=report_sort</code>.</td></tr>
+<tr><td><code>on_search</code></td><td><code>None</code></td><td>Callable <code>(query: str) -&gt; None</code>.</td><td><code>on_search=report_search</code>.</td></tr>
+<tr><td><code>**frame_kwargs</code></td><td>Frame defaults plus table defaults</td><td>CustomTkinter <code>CTkFrame</code> options such as <code>fg_color</code>, <code>border_color</code>, <code>corner_radius</code>, <code>border_width</code>.</td><td><code>fg_color=(&quot;white&quot;, &quot;#1f2937&quot;)</code>.</td></tr>
+</tbody></table></div>
+<h2 id="tablestyle-reference">TableStyle Reference</h2>
+<p>Use <code>TableStyle</code> or a style dictionary to customize the whole table. Any option left as <code>None</code> falls back to the active CustomTkinter theme and table defaults.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Group</th><th>Options</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Shape and spacing</td><td><code>corner_radius</code>, <code>border_width</code>, <code>cell_padding_x</code>, <code>badge_padding_x</code>, <code>button_padding_x</code>, <code>badge_radius</code>, <code>checkbox_radius</code>, <code>progress_radius</code>, <code>pill_radius</code>, <code>action_radius</code></td><td>Table frame shape, cell padding, and feature-cell radii.</td></tr>
+<tr><td>Main backgrounds</td><td><code>canvas_bg</code>, <code>surface_bg</code>, <code>row_bg</code>, <code>row_alt_bg</code>, <code>header_bg</code>, <code>footer_bg</code>, <code>hover_bg</code>, <code>selected_bg</code>, <code>selected_hover_bg</code></td><td>The canvas, table surface, row states, header, footer, hover, and selection backgrounds.</td></tr>
+<tr><td>Text colors</td><td><code>text_color</code>, <code>hover_text_color</code>, <code>selected_text_color</code>, <code>selected_hover_text_color</code>, <code>muted_text_color</code>, <code>header_text_color</code>, <code>footer_text_color</code></td><td>Default, state, header, footer, and muted text colors.</td></tr>
+<tr><td>Lines and indicators</td><td><code>divider_color</code>, <code>header_divider_color</code>, <code>border_color</code>, <code>sort_indicator_color</code>, <code>filter_indicator_color</code>, <code>loading_indicator_color</code></td><td>Row/header dividers, table border, sort/filter marks, and loading indicator.</td></tr>
+<tr><td>Feature cells</td><td><code>badge_bg</code>, <code>badge_text_color</code>, <code>pill_bg</code>, <code>pill_text_color</code>, <code>progress_bg</code>, <code>progress_fill</code>, <code>progress_text_color</code>, <code>link_text_color</code>, <code>checkbox_fill</code>, <code>checkbox_fill_checked</code>, <code>checkbox_border</code>, <code>checkbox_check</code>, <code>action_bg</code>, <code>action_border</code>, <code>action_text_color</code></td><td>Default colors for badges, pills, progress bars, links, checkboxes, and action buttons.</td></tr>
+</tbody></table></div>
+<p>Supported alias names:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Alias</th><th>Canonical option</th></tr></thead>
+<tbody>
+<tr><td><code>fg_color</code></td><td><code>canvas_bg</code></td></tr>
+<tr><td><code>text</code>, <code>hover_text</code>, <code>selected_text</code>, <code>selected_hover_text</code>, <code>muted_text</code>, <code>header_text</code>, <code>footer_text</code></td><td>Matching <code>*_color</code> option.</td></tr>
+<tr><td><code>divider</code>, <code>header_divider</code>, <code>table_border</code></td><td><code>divider_color</code>, <code>header_divider_color</code>, <code>border_color</code>.</td></tr>
+<tr><td><code>sort_indicator</code>, <code>filter_indicator</code>, <code>loading_indicator</code></td><td>Matching <code>*_color</code> option.</td></tr>
+<tr><td><code>badge_default_bg</code>, <code>badge_text</code>, <code>pill_text</code>, <code>progress_text</code>, <code>link_text</code>, <code>action_text</code></td><td>Matching feature-cell color option.</td></tr>
+</tbody></table></div>
+<h2 id="tablecolumn-reference">TableColumn Reference</h2>
+<p>Dictionary, <code>Column</code>, and <code>TableColumn</code> definitions normalize to <code>TableColumn</code>.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>How to apply it</th></tr></thead>
+<tbody>
+<tr><td><code>key</code></td><td>Required</td><td>Unique string row field name. Must match row dictionary keys exactly.</td><td><code>{&quot;key&quot;: &quot;name&quot;}</code>.</td></tr>
+<tr><td><code>title</code></td><td>Key title-cased for dictionaries and <code>Column</code>; required for direct <code>TableColumn</code>.</td><td>String header label.</td><td><code>{&quot;title&quot;: &quot;Customer&quot;}</code>.</td></tr>
+<tr><td><code>width</code></td><td><code>140</code> for dictionaries and <code>Column</code>; required for direct <code>TableColumn</code>.</td><td>Integer pixels greater than <code>0</code>.</td><td><code>{&quot;width&quot;: 220}</code>.</td></tr>
+<tr><td><code>align</code></td><td>Depends on <code>type</code>.</td><td><code>&quot;left&quot;</code>, <code>&quot;center&quot;</code>, or <code>&quot;right&quot;</code>.</td><td><code>{&quot;align&quot;: &quot;right&quot;}</code>.</td></tr>
+<tr><td><code>visible</code></td><td><code>True</code></td><td><code>True</code> or <code>False</code>. Hidden columns are not rendered or searched.</td><td><code>{&quot;visible&quot;: False}</code>.</td></tr>
+<tr><td><code>sortable</code></td><td><code>True</code></td><td><code>True</code> or <code>False</code>. Controls header-click sorting.</td><td><code>{&quot;sortable&quot;: False}</code>.</td></tr>
+<tr><td><code>type</code></td><td><code>&quot;text&quot;</code></td><td>One of the 12 column types.</td><td><code>{&quot;type&quot;: &quot;currency&quot;}</code>.</td></tr>
+<tr><td><code>formatter</code></td><td><code>None</code></td><td>Callable <code>(value, row) -&gt; str</code>. Runs before type formatting.</td><td><code>{&quot;formatter&quot;: lambda value, row: str(value).upper()}</code>.</td></tr>
+<tr><td><code>number_format</code></td><td><code>None</code></td><td>Format string using <code>.format(number)</code> or callable <code>(value) -&gt; str</code>.</td><td><code>{&quot;number_format&quot;: &quot;{:,.2f}&quot;}</code>.</td></tr>
+<tr><td><code>percentage_format</code></td><td><code>&quot;{value:.0f}%&quot;</code></td><td>Format string using <code>value</code>, <code>raw_value</code>, and <code>multiplier</code>; positional <code>{}</code> also receives the display value.</td><td><code>{&quot;percentage_format&quot;: &quot;{value:.1f}%&quot;}</code>.</td></tr>
+<tr><td><code>percentage_multiplier</code></td><td><code>1.0</code></td><td>Number greater than <code>0</code>.</td><td><code>{&quot;percentage_multiplier&quot;: 100}</code>.</td></tr>
+<tr><td><code>currency_symbol</code></td><td><code>&quot;$&quot;</code></td><td>String prefix or symbol.</td><td><code>{&quot;currency_symbol&quot;: &quot;GBP &quot;}</code>.</td></tr>
+<tr><td><code>currency_format</code></td><td><code>&quot;{symbol}{value:,.2f}&quot;</code></td><td>Format string using <code>symbol</code>, <code>value</code>, and <code>signed_value</code>.</td><td><code>{&quot;currency_format&quot;: &quot;{symbol}{value:,.0f}&quot;}</code>.</td></tr>
+<tr><td><code>currency_negative_format</code></td><td><code>&quot;-{symbol}{value:,.2f}&quot;</code></td><td>Format string using absolute <code>value</code>, plus <code>symbol</code> and <code>signed_value</code>.</td><td><code>{&quot;currency_negative_format&quot;: &quot;({symbol}{value:,.2f})&quot;}</code>.</td></tr>
+<tr><td><code>date_format</code></td><td><code>&quot;%Y-%m-%d&quot;</code></td><td><code>strftime</code> format string.</td><td><code>{&quot;date_format&quot;: &quot;%d %b %Y&quot;}</code>.</td></tr>
+<tr><td><code>datetime_format</code></td><td><code>&quot;%Y-%m-%d %H:%M&quot;</code></td><td><code>strftime</code> format string.</td><td><code>{&quot;datetime_format&quot;: &quot;%d %b %H:%M&quot;}</code>.</td></tr>
+<tr><td><code>badge_colors</code></td><td><code>{}</code></td><td>Mapping of displayed badge text to color string or light/dark tuple.</td><td><code>{&quot;badge_colors&quot;: {&quot;Open&quot;: &quot;#22c55e&quot;}}</code>.</td></tr>
+<tr><td><code>badge_fallback_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple.</td><td><code>{&quot;badge_fallback_color&quot;: &quot;#64748b&quot;}</code>.</td></tr>
+<tr><td><code>badge_fallback_handler</code></td><td><code>None</code></td><td>Callable <code>(value, row, column) -&gt; BadgeStyle, color, or None</code>.</td><td><code>{&quot;badge_fallback_handler&quot;: status_fallback}</code>.</td></tr>
+<tr><td><code>pill_colors</code></td><td><code>{}</code></td><td>Mapping of pill text to color string or light/dark tuple.</td><td><code>{&quot;pill_colors&quot;: {&quot;Urgent&quot;: &quot;#ef4444&quot;}}</code>.</td></tr>
+<tr><td><code>pill_fallback_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple.</td><td><code>{&quot;pill_fallback_color&quot;: &quot;#64748b&quot;}</code>.</td></tr>
+<tr><td><code>pill_text_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple.</td><td><code>{&quot;pill_text_color&quot;: &quot;#ffffff&quot;}</code>.</td></tr>
+<tr><td><code>actions</code></td><td><code>()</code></td><td>Sequence of <code>TableAction</code>, mapping, or string actions.</td><td><code>{&quot;actions&quot;: [{&quot;key&quot;: &quot;view&quot;, &quot;label&quot;: &quot;View&quot;}]}</code>.</td></tr>
+<tr><td><code>progress_min</code></td><td><code>0.0</code></td><td>Number. Must be less than <code>progress_max</code>.</td><td><code>{&quot;progress_min&quot;: 0}</code>.</td></tr>
+<tr><td><code>progress_max</code></td><td><code>100.0</code></td><td>Number. Must be greater than <code>progress_min</code>.</td><td><code>{&quot;progress_max&quot;: 100}</code>.</td></tr>
+<tr><td><code>progress_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple.</td><td><code>{&quot;progress_color&quot;: &quot;#2563eb&quot;}</code>.</td></tr>
+<tr><td><code>progress_background_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple.</td><td><code>{&quot;progress_background_color&quot;: &quot;#dbeafe&quot;}</code>.</td></tr>
+<tr><td><code>progress_show_text</code></td><td><code>True</code></td><td><code>True</code> or <code>False</code>.</td><td><code>{&quot;progress_show_text&quot;: False}</code>.</td></tr>
+<tr><td><code>progress_text_format</code></td><td><code>&quot;{percent:.0f}%&quot;</code></td><td>Format string using <code>value</code>, <code>minimum</code>, <code>maximum</code>, <code>min</code>, <code>max</code>, <code>percent</code>, and <code>ratio</code>.</td><td><code>{&quot;progress_text_format&quot;: &quot;{value:.0f}/{maximum:.0f}&quot;}</code>.</td></tr>
+<tr><td><code>link_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple.</td><td><code>{&quot;link_color&quot;: &quot;#2563eb&quot;}</code>.</td></tr>
+<tr><td><code>metadata</code></td><td><code>{}</code></td><td>Mapping for your own app-specific data. Not rendered.</td><td><code>{&quot;metadata&quot;: {&quot;source&quot;: &quot;crm&quot;}}</code>.</td></tr>
+</tbody></table></div>
+<p>Default alignment by column type:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Type</th><th>Default alignment</th></tr></thead>
+<tbody>
+<tr><td><code>number</code>, <code>percentage</code>, <code>currency</code></td><td><code>right</code></td></tr>
+<tr><td><code>checkbox</code>, <code>action</code>, <code>progress</code></td><td><code>center</code></td></tr>
+<tr><td>All other types</td><td><code>left</code></td></tr>
+</tbody></table></div>
+<h2 id="column-builder-reference">Column Builder Reference</h2>
+<p><code>Column(&quot;key&quot;)</code> creates a mapping accepted anywhere a column dictionary is accepted.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Parameters</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td><code>Column(key)</code></td><td><code>key: str</code></td><td>Starts a text column with the given row key.</td></tr>
+<tr><td><code>.title(title)</code></td><td><code>title: str</code></td><td>Sets header text.</td></tr>
+<tr><td><code>.width(pixels)</code></td><td><code>pixels: int</code></td><td>Sets column width.</td></tr>
+<tr><td><code>.align(align)</code></td><td><code>&quot;left&quot;</code>, <code>&quot;center&quot;</code>, <code>&quot;right&quot;</code></td><td>Sets alignment.</td></tr>
+<tr><td><code>.hide()</code></td><td>None</td><td>Sets <code>visible=False</code>.</td></tr>
+<tr><td><code>.no_sort()</code></td><td>None</td><td>Sets <code>sortable=False</code>.</td></tr>
+<tr><td><code>.fmt(func)</code></td><td>Callable <code>(value, row) -&gt; str</code></td><td>Sets <code>formatter</code>.</td></tr>
+<tr><td><code>.metadata(**kwargs)</code></td><td>Keyword values</td><td>Sets <code>metadata</code>.</td></tr>
+<tr><td><code>.text()</code></td><td>None</td><td>Sets <code>type=&quot;text&quot;</code>.</td></tr>
+<tr><td><code>.number(format=None)</code></td><td>Format string or callable</td><td>Sets <code>type=&quot;number&quot;</code> and optional <code>number_format</code>.</td></tr>
+<tr><td><code>.percentage(format=&quot;{value:.0f}%&quot;, multiplier=1.0)</code></td><td>Keyword-only format string and display multiplier</td><td>Sets percentage options.</td></tr>
+<tr><td><code>.currency(symbol=&quot;$&quot;, format=&quot;{symbol}{value:,.2f}&quot;, negative_format=&quot;-{symbol}{value:,.2f}&quot;)</code></td><td>Keyword-only formatting options</td><td>Sets currency options.</td></tr>
+<tr><td><code>.date(fmt=&quot;%Y-%m-%d&quot;)</code></td><td><code>strftime</code> format</td><td>Sets date options.</td></tr>
+<tr><td><code>.datetime(fmt=&quot;%Y-%m-%d %H:%M&quot;)</code></td><td><code>strftime</code> format</td><td>Sets datetime options.</td></tr>
+<tr><td><code>.badge(colors=None, fallback_color=None, fallback_handler=None)</code></td><td>Badge settings</td><td>Sets badge options.</td></tr>
+<tr><td><code>.pill_list(colors=None, fallback_color=None, text_color=None)</code></td><td>Pill settings</td><td>Sets pill-list options.</td></tr>
+<tr><td><code>.checkbox()</code></td><td>None</td><td>Sets <code>type=&quot;checkbox&quot;</code>.</td></tr>
+<tr><td><code>.progress(minimum=0.0, maximum=100.0, color=None, background_color=None, show_text=True, text_format=&quot;{percent:.0f}%&quot;)</code></td><td>Progress settings</td><td>Sets progress options.</td></tr>
+<tr><td><code>.link(color=None)</code></td><td>Optional color</td><td>Sets link options.</td></tr>
+<tr><td><code>.action(buttons, sortable=False)</code></td><td>Sequence of actions</td><td>Sets action button options.</td></tr>
+</tbody></table></div>
+<h2 id="tableaction-reference">TableAction Reference</h2>
+<p><code>TableAction</code> defines a button inside an <code>action</code> column or an item in <code>context_menu</code>.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from CTkDataTable import TableAction
+
+
+TableAction(&quot;view&quot;, &quot;View&quot;)
+TableAction(&quot;delete&quot;, &quot;Delete&quot;, fg_color=&quot;#fee2e2&quot;, text_color=&quot;#991b1b&quot;)</code></pre></div>
+<p>Dictionary and string forms are accepted:</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">{&quot;key&quot;: &quot;view&quot;, &quot;label&quot;: &quot;View&quot;, &quot;width&quot;: 72}
+&quot;archive&quot;</code></pre></div>
+<p>String actions use the string as <code>key</code> and title-case it for the label.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Default</th><th>Accepted values</th><th>How to apply it</th></tr></thead>
+<tbody>
+<tr><td><code>key</code></td><td>Required</td><td>String action identifier.</td><td><code>{&quot;key&quot;: &quot;view&quot;}</code>.</td></tr>
+<tr><td><code>label</code></td><td><code>key.title()</code> for dictionaries and strings; required for direct <code>TableAction</code>.</td><td>Button/menu text.</td><td><code>{&quot;label&quot;: &quot;View&quot;}</code>.</td></tr>
+<tr><td><code>width</code></td><td><code>None</code></td><td>Positive integer pixels. If omitted, the button is measured from the label.</td><td><code>{&quot;width&quot;: 76}</code>.</td></tr>
+<tr><td><code>fg_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple.</td><td><code>{&quot;fg_color&quot;: &quot;#fee2e2&quot;}</code>.</td></tr>
+<tr><td><code>text_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple.</td><td><code>{&quot;text_color&quot;: &quot;#991b1b&quot;}</code>.</td></tr>
+<tr><td><code>border_color</code></td><td><code>None</code></td><td>Color string or light/dark tuple.</td><td><code>{&quot;border_color&quot;: &quot;#fecaca&quot;}</code>.</td></tr>
+</tbody></table></div>
+<h2 id="badgestyle-reference">BadgeStyle Reference</h2>
+<p>Use <code>BadgeStyle</code> from a <code>badge_fallback_handler</code>.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">BadgeStyle(text=&quot;Unknown&quot;, fill_color=&quot;#64748b&quot;, text_color=&quot;#ffffff&quot;)</code></pre></div>
+<div class="table-wrap"><table>
+<thead><tr><th>Field</th><th>Default</th><th>Accepted values</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td><code>text</code></td><td>Required</td><td>String.</td><td>Text drawn inside the badge.</td></tr>
+<tr><td><code>fill_color</code></td><td>Required</td><td>Color string or light/dark tuple.</td><td>Badge fill color.</td></tr>
+<tr><td><code>text_color</code></td><td><code>None</code></td><td>Color string, light/dark tuple, or <code>None</code>.</td><td>Badge text color.</td></tr>
+</tbody></table></div>
+<p>Fallback handler return values:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Return value</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td><code>BadgeStyle(...)</code></td><td>Uses custom badge text, fill color, and optional text color.</td></tr>
+<tr><td>Color string or tuple</td><td>Keeps the original cell text and uses the returned fill color.</td></tr>
+<tr><td><code>None</code></td><td>Uses <code>badge_fallback_color</code>, then the table default if no fallback color exists.</td></tr>
+</tbody></table></div>
+<h2 id="tablerowevent-reference">TableRowEvent Reference</h2>
+<p>Interaction callbacks receive <code>TableRowEvent</code>.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Attribute</th><th>Type</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>row</code></td><td><code>dict[str, Any]</code></td><td>Shallow copy of the row.</td></tr>
+<tr><td><code>source_index</code></td><td><code>int</code></td><td>Index in the original source data list.</td></tr>
+<tr><td><code>view_index</code></td><td><code>int</code></td><td>Index in the current filtered and sorted view.</td></tr>
+<tr><td><code>column_key</code></td><td><code>str or None</code></td><td>Clicked column key for cell, link, and action events.</td></tr>
+<tr><td><code>action_key</code></td><td><code>str or None</code></td><td>Clicked action key. Link events use <code>&quot;link&quot;</code> and checkbox events use <code>&quot;checkbox&quot;</code>.</td></tr>
+</tbody></table></div>
+<p>Use <code>source_index</code> when you want the original data position. Use <code>view_index</code> when you intentionally want the current visible order after search, filters, and sorting.</p>
+<h2 id="method-reference">Method Reference</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Returns</th><th>Use</th></tr></thead>
+<tbody>
+<tr><td><code>set_data(data)</code></td><td><code>None</code></td><td>Replace all rows and clear selection.</td></tr>
+<tr><td><code>get_data()</code></td><td><code>list[dict]</code></td><td>Get shallow copies of all source rows.</td></tr>
+<tr><td><code>get_columns()</code></td><td><code>tuple[TableColumn, ...]</code></td><td>Get normalized column definitions.</td></tr>
+<tr><td><code>set_columns(columns)</code></td><td><code>None</code></td><td>Replace columns while preserving compatible sort/filter/selection state.</td></tr>
+<tr><td><code>set_column_width(column_key, width)</code></td><td><code>None</code></td><td>Set one column width, clamped to <code>min_column_width</code>.</td></tr>
+<tr><td><code>get_column_width(column_key)</code></td><td><code>int</code></td><td>Read one column width.</td></tr>
+<tr><td><code>refresh()</code></td><td><code>None</code></td><td>Redraw without changing rows or state.</td></tr>
+<tr><td><code>get_style()</code></td><td><code>TableStyle</code></td><td>Return the current table-wide style options.</td></tr>
+<tr><td><code>set_style(style=None, **kwargs)</code></td><td><code>None</code></td><td>Replace table-wide style options and redraw.</td></tr>
+<tr><td><code>configure_style(style=None, **kwargs)</code></td><td><code>None</code></td><td>Merge table-wide style options into the current style and redraw.</td></tr>
+<tr><td><code>clear()</code></td><td><code>None</code></td><td>Remove all rows.</td></tr>
+<tr><td><code>get_selected_row()</code></td><td><code>dict or None</code></td><td>Get the first selected row.</td></tr>
+<tr><td><code>get_selected_rows()</code></td><td><code>list[dict]</code></td><td>Get all selected rows.</td></tr>
+<tr><td><code>get_selected_indices()</code></td><td><code>list[int]</code></td><td>Get selected source indices in current view order.</td></tr>
+<tr><td><code>get_selected_view_indices()</code></td><td><code>list[int]</code></td><td>Get selected visible row indices.</td></tr>
+<tr><td><code>get_row(index)</code></td><td><code>dict</code></td><td>Get a source row by source index.</td></tr>
+<tr><td><code>get_view_row(view_index)</code></td><td><code>dict</code></td><td>Get a row by visible view index.</td></tr>
+<tr><td><code>source_index_for_view_index(view_index)</code></td><td><code>int</code></td><td>Convert visible index to source index.</td></tr>
+<tr><td><code>view_index_for_source_index(source_index)</code></td><td><code>int or None</code></td><td>Convert source index to visible index, or <code>None</code> if hidden by filters/search.</td></tr>
+<tr><td><code>find_row_index(column_key, value)</code></td><td><code>int or None</code></td><td>Find the first source row where the column equals <code>value</code>.</td></tr>
+<tr><td><code>sort_by(column_key, ascending=True)</code></td><td><code>None</code></td><td>Sort visible rows.</td></tr>
+<tr><td><code>search(query)</code></td><td><code>None</code></td><td>Case-insensitive global search across visible, non-action columns.</td></tr>
+<tr><td><code>filter(query)</code></td><td><code>None</code></td><td>Backward-compatible alias for <code>search(query)</code>.</td></tr>
+<tr><td><code>set_column_filter(column_key, definition)</code></td><td><code>None</code></td><td>Add or replace one column filter.</td></tr>
+<tr><td><code>clear_column_filter(column_key)</code></td><td><code>None</code></td><td>Clear one column filter.</td></tr>
+<tr><td><code>clear_column_filters()</code></td><td><code>None</code></td><td>Clear all column filters.</td></tr>
+<tr><td><code>get_column_filters()</code></td><td><code>dict</code></td><td>Get active column filters.</td></tr>
+<tr><td><code>add_row(row)</code></td><td><code>int</code></td><td>Append one row and return its source index.</td></tr>
+<tr><td><code>add_rows(rows)</code></td><td><code>list[int]</code></td><td>Append multiple rows and return their source indices.</td></tr>
+<tr><td><code>update_row(index, row)</code></td><td><code>None</code></td><td>Replace a source row by source index.</td></tr>
+<tr><td><code>update_view_row(view_index, row)</code></td><td><code>None</code></td><td>Replace a row by current visible index.</td></tr>
+<tr><td><code>update_row_where(column_key, value, new_row)</code></td><td><code>bool</code></td><td>Replace the first source row matching <code>column_key == value</code>.</td></tr>
+<tr><td><code>delete_row(index)</code></td><td><code>None</code></td><td>Delete a source row by source index.</td></tr>
+<tr><td><code>delete_view_row(view_index)</code></td><td><code>None</code></td><td>Delete a row by current visible index.</td></tr>
+<tr><td><code>delete_row_where(column_key, value)</code></td><td><code>bool</code></td><td>Delete the first source row matching <code>column_key == value</code>.</td></tr>
+<tr><td><code>delete_row_by_key(column_key, value)</code></td><td><code>bool</code></td><td>Alias for <code>delete_row_where()</code>.</td></tr>
+<tr><td><code>delete_selected_rows()</code></td><td><code>int</code></td><td>Delete selected source rows and return the number removed.</td></tr>
+<tr><td><code>set_loading(state)</code></td><td><code>None</code></td><td>Show or hide loading state.</td></tr>
+<tr><td><code>set_error(message=None)</code></td><td><code>None</code></td><td>Show error state. <code>None</code> uses <code>error_message</code>.</td></tr>
+<tr><td><code>clear_error()</code></td><td><code>None</code></td><td>Hide error state without changing rows.</td></tr>
+<tr><td><code>load_async(fetch_rows, on_success=None, on_error=None, clear_on_error=False)</code></td><td><code>threading.Thread</code></td><td>Load rows in a background thread and update the table on the Tkinter thread.</td></tr>
+</tbody></table></div>
+<h3 id="data-method-examples">Data Method Examples</h3>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table.set_data([
+    {&quot;id&quot;: 1, &quot;name&quot;: &quot;Alice&quot;, &quot;status&quot;: &quot;Open&quot;},
+    {&quot;id&quot;: 2, &quot;name&quot;: &quot;Bob&quot;, &quot;status&quot;: &quot;Closed&quot;},
+])
+
+rows = table.get_data()
+table.clear()</code></pre></div>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">source_index = table.add_row({&quot;id&quot;: 3, &quot;name&quot;: &quot;Diana&quot;, &quot;status&quot;: &quot;Open&quot;})
+source_indices = table.add_rows([
+    {&quot;id&quot;: 4, &quot;name&quot;: &quot;Evan&quot;, &quot;status&quot;: &quot;Open&quot;},
+    {&quot;id&quot;: 5, &quot;name&quot;: &quot;Fatima&quot;, &quot;status&quot;: &quot;Closed&quot;},
+])</code></pre></div>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table.update_row(0, {&quot;id&quot;: 1, &quot;name&quot;: &quot;Alice Updated&quot;, &quot;status&quot;: &quot;Open&quot;})
+table.update_view_row(0, {&quot;id&quot;: 2, &quot;name&quot;: &quot;Bob Updated&quot;, &quot;status&quot;: &quot;Closed&quot;})
+
+updated = table.update_row_where(
+    &quot;id&quot;,
+    3,
+    {&quot;id&quot;: 3, &quot;name&quot;: &quot;Diana Updated&quot;, &quot;status&quot;: &quot;Open&quot;},
+)</code></pre></div>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table.delete_row(0)
+table.delete_view_row(0)
+
+deleted = table.delete_row_where(&quot;id&quot;, 5)
+deleted_again = table.delete_row_by_key(&quot;id&quot;, 4)</code></pre></div>
+<h3 id="navigation-and-selection-method-examples">Navigation and Selection Method Examples</h3>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">first_source_row = table.get_row(0)
+first_visible_row = table.get_view_row(0)
+
+source_index = table.source_index_for_view_index(0)
+view_index = table.view_index_for_source_index(source_index)
+found_index = table.find_row_index(&quot;id&quot;, 42)</code></pre></div>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">one_row = table.get_selected_row()
+many_rows = table.get_selected_rows()
+source_indices = table.get_selected_indices()
+view_indices = table.get_selected_view_indices()</code></pre></div>
+<h3 id="column-method-examples">Column Method Examples</h3>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">columns = table.get_columns()
+
+table.set_columns([
+    {&quot;key&quot;: &quot;id&quot;, &quot;title&quot;: &quot;ID&quot;, &quot;width&quot;: 80, &quot;type&quot;: &quot;number&quot;},
+    {&quot;key&quot;: &quot;name&quot;, &quot;title&quot;: &quot;Customer&quot;, &quot;width&quot;: 240},
+])
+
+table.set_column_width(&quot;name&quot;, 280)
+current_width = table.get_column_width(&quot;name&quot;)
+table.refresh()</code></pre></div>
+<h3 id="style-method-examples">Style Method Examples</h3>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">current_style = table.get_style()
+
+table.configure_style(
+    header_bg=&quot;#111827&quot;,
+    header_text_color=&quot;#ffffff&quot;,
+    selected_bg=&quot;#2563eb&quot;,
+)
+
+table.set_style(
+    {
+        &quot;surface_bg&quot;: &quot;#ffffff&quot;,
+        &quot;row_bg&quot;: &quot;#ffffff&quot;,
+        &quot;row_alt_bg&quot;: &quot;#f8fafc&quot;,
+        &quot;text_color&quot;: &quot;#111827&quot;,
+    }
+)</code></pre></div>
+<h3 id="search-sort-and-filter-method-examples">Search, Sort, and Filter Method Examples</h3>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table.sort_by(&quot;name&quot;, ascending=True)
+table.search(&quot;north&quot;)
+table.filter(&quot;north&quot;)
+
+table.set_column_filter(&quot;status&quot;, {&quot;type&quot;: &quot;equals&quot;, &quot;value&quot;: &quot;Open&quot;})
+table.clear_column_filter(&quot;status&quot;)
+table.clear_column_filters()</code></pre></div>
+<h3 id="loading-method-examples">Loading Method Examples</h3>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">table.set_loading(True)
+table.set_data(fetch_rows())
+table.set_loading(False)
+
+table.set_error(&quot;Could not load rows&quot;)
+table.clear_error()</code></pre></div>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">thread = table.load_async(
+    fetch_rows,
+    on_success=lambda rows: None,
+    on_error=lambda error: None,
+    clear_on_error=True,
+)</code></pre></div>
+<h2 id="rows-from-cursor-reference">rows_from_cursor Reference</h2>
+<p><code>rows_from_cursor(cursor)</code> converts a DB-API cursor result into dictionaries using <code>cursor.description</code>.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from CTkDataTable import rows_from_cursor
+
+
+cursor.execute(&quot;SELECT id, name, status FROM customers&quot;)
+rows = rows_from_cursor(cursor)
+table.set_data(rows)</code></pre></div>
+<div class="table-wrap"><table>
+<thead><tr><th>Parameter</th><th>Accepted values</th><th>Returns</th></tr></thead>
+<tbody>
+<tr><td><code>cursor</code></td><td>DB-API cursor after a <code>SELECT</code> query has executed and <code>cursor.description</code> is available.</td><td><code>list[dict]</code></td></tr>
+</tbody></table></div>
+<h2 id="complete-mini-app">Complete Mini App</h2>
+<p>This app combines search, sorting, badges, currency, dates, checkboxes, row actions, context menus, footer summaries, and multi-select.</p>
+<div class="code-card"><button class="copy-button" type="button">Copy</button><pre><code class="language-python">from datetime import date, timedelta
+
+import customtkinter as ctk
+
+from CTkDataTable import CTkDataTable, TableRowEvent
+
+
+app = ctk.CTk()
+app.title(&quot;Work Orders&quot;)
+app.geometry(&quot;1080x620&quot;)
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure(2, weight=1)
+
+toolbar = ctk.CTkFrame(app, corner_radius=0)
+toolbar.grid(row=0, column=0, sticky=&quot;ew&quot;, padx=14, pady=(14, 8))
+toolbar.grid_columnconfigure(0, weight=1)
+
+search = ctk.CTkEntry(toolbar, placeholder_text=&quot;Search work orders&quot;)
+search.grid(row=0, column=0, sticky=&quot;ew&quot;, padx=(10, 8), pady=10)
+
+detail = ctk.CTkLabel(app, text=&quot;No row selected&quot;, anchor=&quot;w&quot;)
+detail.grid(row=1, column=0, sticky=&quot;ew&quot;, padx=14, pady=(0, 8))
+
+today = date.today()
+columns = [
+    {&quot;key&quot;: &quot;id&quot;, &quot;title&quot;: &quot;WO&quot;, &quot;width&quot;: 90},
+    {&quot;key&quot;: &quot;title&quot;, &quot;title&quot;: &quot;Title&quot;, &quot;width&quot;: 260},
+    {
+        &quot;key&quot;: &quot;priority&quot;,
+        &quot;title&quot;: &quot;Priority&quot;,
+        &quot;width&quot;: 120,
+        &quot;type&quot;: &quot;badge&quot;,
+        &quot;badge_colors&quot;: {&quot;High&quot;: &quot;#ef4444&quot;, &quot;Medium&quot;: &quot;#f59e0b&quot;, &quot;Low&quot;: &quot;#22c55e&quot;},
+        &quot;badge_fallback_color&quot;: &quot;#64748b&quot;,
+    },
+    {&quot;key&quot;: &quot;cost&quot;, &quot;title&quot;: &quot;Cost&quot;, &quot;width&quot;: 110, &quot;type&quot;: &quot;currency&quot;},
+    {&quot;key&quot;: &quot;due&quot;, &quot;title&quot;: &quot;Due&quot;, &quot;width&quot;: 125, &quot;type&quot;: &quot;date&quot;, &quot;date_format&quot;: &quot;%d %b&quot;},
+    {&quot;key&quot;: &quot;complete&quot;, &quot;title&quot;: &quot;Done&quot;, &quot;width&quot;: 90, &quot;type&quot;: &quot;checkbox&quot;},
+    {
+        &quot;key&quot;: &quot;actions&quot;,
+        &quot;title&quot;: &quot;Actions&quot;,
+        &quot;width&quot;: 170,
+        &quot;type&quot;: &quot;action&quot;,
+        &quot;sortable&quot;: False,
+        &quot;actions&quot;: [
+            {&quot;key&quot;: &quot;view&quot;, &quot;label&quot;: &quot;View&quot;},
+            {&quot;key&quot;: &quot;delete&quot;, &quot;label&quot;: &quot;Delete&quot;},
+        ],
+    },
+]
+
+rows = [
+    {
+        &quot;id&quot;: &quot;WO-001&quot;,
+        &quot;title&quot;: &quot;Replace intake filter&quot;,
+        &quot;priority&quot;: &quot;High&quot;,
+        &quot;cost&quot;: 450,
+        &quot;due&quot;: today + timedelta(days=2),
+        &quot;complete&quot;: False,
+        &quot;actions&quot;: None,
+    },
+    {
+        &quot;id&quot;: &quot;WO-002&quot;,
+        &quot;title&quot;: &quot;Update inspection checklist&quot;,
+        &quot;priority&quot;: &quot;Low&quot;,
+        &quot;cost&quot;: 120,
+        &quot;due&quot;: today + timedelta(days=8),
+        &quot;complete&quot;: True,
+        &quot;actions&quot;: None,
+    },
+    {
+        &quot;id&quot;: &quot;WO-003&quot;,
+        &quot;title&quot;: &quot;Audit calibration records&quot;,
+        &quot;priority&quot;: &quot;Medium&quot;,
+        &quot;cost&quot;: 275,
+        &quot;due&quot;: today + timedelta(days=4),
+        &quot;complete&quot;: False,
+        &quot;actions&quot;: None,
+    },
+]
+
+table: CTkDataTable | None = None
+
+
+def select_row(event: TableRowEvent) -&gt; None:
+    detail.configure(text=f&quot;Selected {event.row[&#x27;id&#x27;]}: {event.row[&#x27;title&#x27;]}&quot;)
+
+
+def handle_action(event: TableRowEvent) -&gt; None:
+    if table is None:
+        return
+    if event.action_key == &quot;view&quot;:
+        detail.configure(text=f&quot;Viewing {event.row[&#x27;id&#x27;]}&quot;)
+    elif event.action_key == &quot;delete&quot;:
+        table.delete_row_by_key(&quot;id&quot;, event.row[&quot;id&quot;])
+
+
+def handle_context(event: TableRowEvent) -&gt; None:
+    if event.action_key == &quot;copy_id&quot;:
+        app.clipboard_clear()
+        app.clipboard_append(event.row[&quot;id&quot;])
+        detail.configure(text=f&quot;Copied {event.row[&#x27;id&#x27;]}&quot;)
+
+
+def handle_checkbox(event: TableRowEvent) -&gt; None:
+    detail.configure(
+        text=f&quot;{event.row[&#x27;id&#x27;]} complete: {event.row[event.column_key]}&quot;
+    )
+
+
+table = CTkDataTable(
+    app,
+    columns=columns,
+    data=rows,
+    horizontal_scroll=True,
+    multi_select=True,
+    footer=True,
+    summaries={&quot;id&quot;: &quot;count&quot;, &quot;cost&quot;: &quot;sum&quot;},
+    context_menu=[{&quot;key&quot;: &quot;copy_id&quot;, &quot;label&quot;: &quot;Copy ID&quot;}],
+    on_row_click=select_row,
+    on_action_click=handle_action,
+    on_context_action=handle_context,
+    on_checkbox_toggle=handle_checkbox,
+)
+table.grid(row=2, column=0, sticky=&quot;nsew&quot;, padx=14, pady=(0, 14))
+
+search.bind(&quot;&lt;KeyRelease&gt;&quot;, lambda _event: table.search(search.get()))
+
+app.mainloop()</code></pre></div>
+<h2 id="readiness-assessment">Readiness Assessment</h2>
+<p>The consolidated documentation is ready for a mixed technical and non-technical audience. It leads with tasks, keeps the exact key-matching constraint visible early, covers static, live-update, and interactive use cases equally, and gives developers a complete reference for constructor options, column options, helper classes, events, filters, callbacks, and methods.</p></main>
+  </div>
+  <a class="top-link" href="#top">Top</a>
+  <script>
+    const htmlEscape = (value) => value.replace(/[&<>"']/g, (char) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;'})[char]);
+    const pythonKeywords = new Set(['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield']);
+    const pythonBuiltins = new Set(['bool', 'dict', 'float', 'int', 'len', 'list', 'print', 'range', 'set', 'str', 'sum', 'tuple']);
+    const sqlKeywords = new Set(['AS', 'BY', 'FROM', 'GROUP', 'INSERT', 'INTO', 'JOIN', 'LIMIT', 'ORDER', 'SELECT', 'UPDATE', 'VALUES', 'WHERE']);
+    const wrapLexeme = (lexeme, className) => { const escaped = htmlEscape(lexeme); return className ? `<span class="${className}">${escaped}</span>` : escaped; };
+    const highlightWithPattern = (text, pattern, classify) => { let result = ''; let lastIndex = 0; pattern.lastIndex = 0; for (let match = pattern.exec(text); match !== null; match = pattern.exec(text)) { result += htmlEscape(text.slice(lastIndex, match.index)); result += wrapLexeme(match[0], classify(match[0], match.index, text)); lastIndex = match.index + match[0].length; } result += htmlEscape(text.slice(lastIndex)); return result; };
+    const highlightPython = (text) => {
+      const pattern = new RegExp(String.raw`(#.*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b[A-Za-z_][A-Za-z0-9_]*(?=\s*\()|\b[A-Z][A-Za-z0-9_]*\b|\b[A-Za-z_][A-Za-z0-9_]*\b|\b\d+(?:\.\d+)?\b|[-+*/%=!<>:&|.,;()[\]{}])`, 'g');
+      return highlightWithPattern(text, pattern, (lexeme, index, source) => {
+        if (lexeme.startsWith('#')) return 'tok-comment';
+        if (/^("|')/.test(lexeme)) return 'tok-string';
+        if (/^\d/.test(lexeme)) return 'tok-number';
+        if (pythonKeywords.has(lexeme)) return 'tok-keyword';
+        if (pythonBuiltins.has(lexeme)) return 'tok-builtin';
+        if (/^[A-Z][A-Za-z0-9_]*$/.test(lexeme)) return 'tok-type';
+        if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(lexeme) && /^\s*\(/.test(source.slice(index + lexeme.length))) return 'tok-function';
+        if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(lexeme)) return '';
+        return 'tok-operator';
+      });
+    };
+
+    const highlightSql = (text) => {
+      const pattern = new RegExp(String.raw`(--.*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b[A-Za-z_][A-Za-z0-9_]*\b|\b\d+(?:\.\d+)?\b|[-+*/%=!<>.,;()[\]])`, 'gi');
+      return highlightWithPattern(text, pattern, (lexeme, index, source) => {
+        if (lexeme.startsWith('--')) return 'tok-comment';
+        if (/^("|')/.test(lexeme)) return 'tok-string';
+        if (/^\d/.test(lexeme)) return 'tok-number';
+        if (sqlKeywords.has(lexeme.toUpperCase())) return 'tok-keyword';
+        if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(lexeme) && /^\s*\(/.test(source.slice(index + lexeme.length))) return 'tok-function';
+        if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(lexeme)) return '';
+        return 'tok-operator';
+      });
+    };
+
+    document.querySelectorAll('pre code').forEach((code) => { const text = code.textContent; if (code.classList.contains('language-python')) { code.innerHTML = highlightPython(text); } else if (code.classList.contains('language-sql')) { code.innerHTML = highlightSql(text); } else { code.innerHTML = htmlEscape(text); } });
+    document.querySelectorAll('.copy-button').forEach((button) => { button.addEventListener('click', async () => { const code = button.parentElement.querySelector('code').innerText; await navigator.clipboard.writeText(code); const old = button.textContent; button.textContent = 'Copied'; window.setTimeout(() => { button.textContent = old; }, 1200); }); });
+  </script>
+</body>
+</html>

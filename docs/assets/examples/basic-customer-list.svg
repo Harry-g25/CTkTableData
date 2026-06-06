@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Basic customer list table example</title>
+  <desc id="desc">A CustomTkinter style data table showing customer IDs, customer names, and cities.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eef5ff"/>
+      <stop offset="1" stop-color="#f8fbff"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#172033" flood-opacity=".14"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect x="116" y="82" width="1048" height="556" rx="18" fill="#ffffff" filter="url(#shadow)"/>
+  <rect x="116" y="82" width="1048" height="58" rx="18" fill="#172033"/>
+  <circle cx="153" cy="111" r="7" fill="#ef4444"/>
+  <circle cx="178" cy="111" r="7" fill="#f59e0b"/>
+  <circle cx="203" cy="111" r="7" fill="#22c55e"/>
+  <text x="238" y="118" fill="#e5eefb" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700">Customer Directory</text>
+  <rect x="148" y="176" width="984" height="394" rx="12" fill="#f8fafc" stroke="#d9e1ec"/>
+  <rect x="148" y="176" width="984" height="60" rx="12" fill="#edf3fb"/>
+  <text x="186" y="213" fill="#334155" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">ID</text>
+  <text x="292" y="213" fill="#334155" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">Customer</text>
+  <text x="740" y="213" fill="#334155" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">City</text>
+  <path d="M250 176v394M700 176v394" stroke="#d9e1ec"/>
+  <g font-family="Segoe UI, Arial, sans-serif" font-size="16">
+    <rect x="148" y="236" width="984" height="56" fill="#ffffff"/>
+    <text x="186" y="271" fill="#475569">1</text>
+    <text x="292" y="271" fill="#172033" font-weight="600">Northwind Components</text>
+    <text x="740" y="271" fill="#475569">Bristol</text>
+    <rect x="148" y="292" width="984" height="56" fill="#f8fafc"/>
+    <text x="186" y="327" fill="#475569">2</text>
+    <text x="292" y="327" fill="#172033" font-weight="600">Meridian Foods</text>
+    <text x="740" y="327" fill="#475569">Leeds</text>
+    <rect x="148" y="348" width="984" height="56" fill="#ffffff"/>
+    <text x="186" y="383" fill="#475569">3</text>
+    <text x="292" y="383" fill="#172033" font-weight="600">Blue Ridge Logistics</text>
+    <text x="740" y="383" fill="#475569">Glasgow</text>
+    <rect x="148" y="404" width="984" height="56" fill="#f8fafc"/>
+    <text x="186" y="439" fill="#475569">4</text>
+    <text x="292" y="439" fill="#172033" font-weight="600">Aster Digital</text>
+    <text x="740" y="439" fill="#475569">Manchester</text>
+  </g>
+  <g stroke="#d9e1ec">
+    <path d="M148 236h984M148 292h984M148 348h984M148 404h984M148 460h984"/>
+  </g>
+  <text x="148" y="608" fill="#64748b" font-family="Segoe UI, Arial, sans-serif" font-size="15">A minimal CTkDataTable with three columns and dictionary rows.</text>
+</svg>
