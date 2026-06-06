@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=69", "wheel"]
+requires = ["setuptools>=77.0.3", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,23 +8,36 @@ version = "0.1.0"
 description = "A virtualized data table widget for CustomTkinter applications."
 readme = "README.md"
 requires-python = ">=3.11"
+authors = [{ name = "Harry Gomm" }]
+license = "MIT"
+license-files = ["LICENSE"]
 keywords = ["customtkinter", "tkinter", "table", "datagrid", "widgets"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
     "Topic :: Software Development :: User Interfaces",
 ]
 dependencies = ["customtkinter>=5.2"]
+
+[project.urls]
+Documentation = "https://github.com/Harry-g25/CTkTableData/blob/main/docs/Docs.md"
+Homepage = "https://github.com/Harry-g25/CTkTableData"
+Issues = "https://github.com/Harry-g25/CTkTableData/issues"
+Source = "https://github.com/Harry-g25/CTkTableData"
 
 [project.optional-dependencies]
 dev = [
     "build>=1.2",
     "mypy>=1.10",
     "ruff>=0.11",
+    "twine>=5.1",
 ]
 
 [tool.setuptools.packages.find]

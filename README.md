@@ -6,10 +6,10 @@ Use it when you want to show records from Python data, PostgreSQL queries, SQLit
 
 ## Install
 
-From the project root:
+From PyPI:
 
 ```powershell
-pip install -e .
+pip install CTkDataTable
 ```
 
 For local development:
@@ -32,7 +32,20 @@ python -m unittest discover -v
 python -m ruff check .
 python -m mypy CTkDataTable
 python -m build
+python -m twine check dist/*
 ```
+
+## Release Build
+
+```powershell
+Remove-Item -Recurse -Force dist, build -ErrorAction SilentlyContinue
+python -m build
+python -m twine check dist/*
+```
+
+## License
+
+MIT License. See [LICENSE](https://github.com/Harry-g25/CTkTableData/blob/main/LICENSE).
 
 ## Quick Start
 
@@ -629,8 +642,7 @@ When the table has focus, use Up, Down, Page Up, Page Down, Home, and End to mov
 
 ## More Detail
 
-- Full API reference: [docs/Docs.md](docs/Docs.md)
-- Standalone HTML guide: [docs/Docs.html](docs/Docs.html)
-- Manual GUI checklist: [docs/gui_checklist.md](docs/gui_checklist.md)
-- Basic example: [CTkDataTable/examples/basic_table.py](CTkDataTable/examples/basic_table.py)
-- NCR records example: [CTkDataTable/examples/ncr_records.py](CTkDataTable/examples/ncr_records.py)
+- Full API reference: [docs/Docs.md](https://github.com/Harry-g25/CTkTableData/blob/main/docs/Docs.md)
+- Standalone HTML guide: [docs/Docs.html](https://github.com/Harry-g25/CTkTableData/blob/main/docs/Docs.html)
+- Basic example: [CTkDataTable/examples/basic_table.py](https://github.com/Harry-g25/CTkTableData/blob/main/CTkDataTable/examples/basic_table.py)
+- NCR records example: [CTkDataTable/examples/ncr_records.py](https://github.com/Harry-g25/CTkTableData/blob/main/CTkDataTable/examples/ncr_records.py)
