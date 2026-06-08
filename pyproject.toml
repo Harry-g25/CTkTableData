@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "CTkDataTable"
-version = "0.1.0"
+version = "0.2.0"
 description = "A virtualized data table widget for CustomTkinter applications."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -27,10 +27,10 @@ classifiers = [
 dependencies = ["customtkinter>=5.2"]
 
 [project.urls]
-Documentation = "https://github.com/Harry-g25/CTkTableData/blob/main/docs/Docs.md"
-Homepage = "https://github.com/Harry-g25/CTkTableData"
-Issues = "https://github.com/Harry-g25/CTkTableData/issues"
-Source = "https://github.com/Harry-g25/CTkTableData"
+Documentation = "https://harry-g25.github.io/CTkDataTable-Docs-Website/"
+Homepage = "https://github.com/Harry-g25/CTkDataTable"
+Issues = "https://github.com/Harry-g25/CTkDataTable/issues"
+Source = "https://github.com/Harry-g25/CTkDataTable"
 
 [project.optional-dependencies]
 dev = [
